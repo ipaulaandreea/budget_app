@@ -7,7 +7,7 @@ import NewTransactionPage from './pages/NewTransaction'
 import RootLayout from './pages/Root';
 import BudgetPlannerPage from './pages/BudgetPlanner'
 import InstructionsPage from './pages/Instructions'
-
+import { action as manipulateExpenseAction } from './components/TrackingForm/TrackingForm';
 function App() {
 
   const router = createBrowserRouter([
@@ -17,7 +17,7 @@ function App() {
       children: [
         { index: true, element: <HomePage /> },
         {path: 'tracker', element: <TrackingPage />},
-        {path: 'new-transaction', element: <NewTransactionPage />},
+        {path: 'new', element: <NewTransactionPage />, action: manipulateExpenseAction},
         {path: 'budget', element: <BudgetPlannerPage/>},
         {path: 'instructions', element: <InstructionsPage/>}
 

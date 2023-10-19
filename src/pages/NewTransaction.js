@@ -1,8 +1,8 @@
-// import TransactionForm from "../components/EventForm";
+import TrackingForm from "../components/TrackingForm/TrackingForm";
 
 const NewTransactionPage = () => {
 
-//   return <TransactionForm method = 'post' />;
+  return <TrackingForm method = 'post' />;
 };
 
 export default NewTransactionPage;
