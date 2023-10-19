@@ -9,14 +9,32 @@ function MainNavigation() {
   return (
 <Navbar collapseOnSelect expand="lg" bg="light" data-bs-theme="light" className="bg-body-tertiary">
       <Container>
-        <Navbar.Brand href="#home">Budget App</Navbar.Brand>
+        <Navbar.Brand>Budget App</Navbar.Brand>
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav">
           <Nav className="me-auto">
-          <Nav.Link href="#home">How to use this App </Nav.Link>
-            <Nav.Link href="#features">Monthly Summary</Nav.Link>
-            <Nav.Link href="#pricing">Expense Tracker</Nav.Link>
-            <Nav.Link href="#pricing">Budget Planner</Nav.Link>
+                      <NavLink
+              to="/"
+              className={({ isActive }) =>
+                isActive ? classes.active : undefined
+              }
+              end
+            >Home </NavLink>
+          <NavLink
+              to="instructions"
+              className={({ isActive }) =>
+                isActive ? classes.active : undefined
+              }>Instructions </NavLink>
+            <NavLink
+              to="tracker"
+              className={({ isActive }) =>
+                isActive ? classes.active : undefined
+              }>Expense Tracker</NavLink>
+            <NavLink
+              to="budget"
+              className={({ isActive }) =>
+                isActive ? classes.active : undefined
+              }>Budget Planner</NavLink>
           </Nav>
         </Navbar.Collapse>
       </Container>

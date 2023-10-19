@@ -1,11 +1,13 @@
 import {Container} from 'react-bootstrap'
 
-const HomePage = () => {
+const InstructionsPage = () => {
     return (
         <Container>
-        <h1>Welcome to Budget app</h1>
+
+        <h3>How to use this app: </h3>
         </Container>
     )
+
 }
 
-export default HomePage;
+export default InstructionsPage
