@@ -11,7 +11,7 @@ const TrackingPage = () => {
   const { transactions } = useLoaderData();
   return (
     <>
-      {/* <AddTransaction /> */}
+      <AddTransaction />
       <Await resolve={transactions}>
       {(loadedTransactions) =><TrackingSheet transactions = {loadedTransactions} />}
     </Await>

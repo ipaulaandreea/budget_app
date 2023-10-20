@@ -1,24 +1,65 @@
+
 import { Container, Col } from "react-bootstrap";
 import {Form as BForm} from "react-bootstrap";
 import {
   Form,
   useNavigate,
-  useNavigation,
   useActionData,
-  json,
   redirect,
 } from "react-router-dom";
 import classes from "./TrackingForm.module.css";
+import { collection, addDoc} from 'firebase/firestore'
+import { db } from '../../config/firebase'
+
+
+
+const transactionsCollectionRef=collection(db,'transactions')
 
 const TrackingForm = ({ method, expense }) => {
+
   const data = useActionData();
   const navigate = useNavigate();
-  // const navigation = useNavigation();
 
+
+const categoryOptions=[
+  {
+    value: 'Income', 
+    label: 'Income', 
+    subcategories: [
+      'salary', 
+      'side hustle',
+      'bonus', 
+      'selling', 
+      'dividens', 
+      'other'
+    ]
+  }, 
+  {
+    value: 'Expense', 
+    label: 'Expense', 
+    subcategories: [
+      'rent', 
+      'mortage',
+      'loans', 
+      'subscriptions', 
+      'electricity', 
+      'water',
+      'gas',
+      'internet',
+      'vacation',
+      'home maintenance',
+      'groceries',
+      'gifts',
+      'shopping'
+    ]
+  }
+]
 
   const cancelHandler = () => {
     navigate('..');
   };
+
+
 
 
   return (
@@ -32,16 +73,7 @@ const TrackingForm = ({ method, expense }) => {
           ))}
         </ul>
       )}
-        <Col>
-          <BForm.Control
-            placeholder="date"
-            id="date"
-            type="date"
-            name="date"
-            required
-            // defaultValue={event ? event.title : ''}
-          />
-        </Col>
+
         <Col>
           <BForm.Control
             placeholder="Transaction"
@@ -53,15 +85,23 @@ const TrackingForm = ({ method, expense }) => {
           />
         </Col>
         <Col>
-          <BForm.Control
-            placeholder="Category"
-            id="category"
-            type="text"
-            name="category"
-            required
-          />
-        </Col>
 
+        
+
+<BForm.Select
+  id="category"
+  name="category"
+  required
+>
+  <option value="">Category</option>
+  {categoryOptions.map(option => (
+    <option key={option.value} value={option.value}>
+      {option.label}
+    </option>
+  ))}
+</BForm.Select>
+
+        </Col>
         <Col>
           <BForm.Control
             placeholder="Subcategory"
@@ -98,35 +138,23 @@ export default TrackingForm;
 
 export async function action({ request, params }) {
 
-  const method = request.method;
+  // const method = request.method;
   const data = await request.formData();
 
   const transactionData = {
-    date: data.get('date'),
+    // date: data.get('date').unix(),
     transaction: data.get('transaction'),
     category: data.get('category'),
     subcategory: data.get('subcategory'),
     amount: data.get('amount'),
   };
 
-  let url = 'https://budget-app-ed017-default-rtdb.europe-west1.firebasedatabase.app/transactions.json';
-
-  const response = await fetch(url, {
-    method: method,
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(transactionData),
-  });
-
-  if (response.status === 422) {
-    return response;
+  try {
+    await addDoc(transactionsCollectionRef, transactionData)
   }
-
-  if (!response.ok) {
-    throw json({ message: 'Could not save transaction.' }, { status: 500 });
+  catch (err){
+    console.log(err)
   }
-
-
+  
   return redirect('/tracker');
 }

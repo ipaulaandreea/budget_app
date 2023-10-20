@@ -11,7 +11,7 @@ const TrackingSheet = ({transactions}) => {
       <Table striped bordered hover>
         <thead>
           <tr>
-            <th>Date</th>
+            {/* <th>Date</th> */}
             <th>Transaction</th>
             <th>Category</th>
             <th>Subcategory</th>
@@ -21,7 +21,7 @@ const TrackingSheet = ({transactions}) => {
         <tbody>
           {transactions.map((transaction)=> (
             <tr>
-            <td>{transaction.date.toDate().toLocaleString()}</td>
+            {/* <td>{transaction.date.toDate().toLocaleString()}</td> */}
             <td>{transaction.transaction}</td>
             <td>{transaction.category}</td>
             <td>{transaction.subcategory}</td>
