@@ -1,10 +1,10 @@
 import { Container, Table } from "react-bootstrap";
 
-const TrackingSheet = () => {
+const TrackingSheet = ({transactions}) => {
   return (
     <>
       <Container>
-        <h1>Expenses tracker</h1>
+        <h1>Transactions tracker</h1>
         <h1>Your Balance</h1>
         <h1>10$</h1>
       </Container>
@@ -12,18 +12,22 @@ const TrackingSheet = () => {
         <thead>
           <tr>
             <th>Date</th>
-            <th>Name</th>
+            <th>Transaction</th>
             <th>Category</th>
+            <th>Subcategory</th>
             <th>Amount</th>
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>1</td>
-            <td>Mark</td>
-            <td>Otto</td>
-            <td>@mdo</td>
-          </tr>
+          {transactions.map((transaction)=> (
+            <tr>
+            <td>{transaction.date.toDate().toLocaleString()}</td>
+            <td>{transaction.transaction}</td>
+            <td>{transaction.category}</td>
+            <td>{transaction.subcategory}</td>
+            <td>{transaction.amount}</td>
+            </tr>
+          ))}
         </tbody>
       </Table>
     </>

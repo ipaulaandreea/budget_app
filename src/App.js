@@ -2,8 +2,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 import "./App.css";
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import HomePage from './pages/Home'
-import TrackingPage from './pages/TrackingPage'
-import NewTransactionPage from './pages/NewTransaction'
+import TrackingPage,  { loader as transactionsLoader } from './pages/TrackingPage'
 import RootLayout from './pages/Root';
 import BudgetPlannerPage from './pages/BudgetPlanner'
 import InstructionsPage from './pages/Instructions'
@@ -16,8 +15,8 @@ function App() {
       element: <RootLayout />,
       children: [
         { index: true, element: <HomePage /> },
-        {path: 'tracker', element: <TrackingPage />},
-        {path: 'new', element: <NewTransactionPage />, action: manipulateExpenseAction},
+        {path: 'tracker', element: <TrackingPage />, loader: transactionsLoader, action: manipulateExpenseAction},
+
         {path: 'budget', element: <BudgetPlannerPage/>},
         {path: 'instructions', element: <InstructionsPage/>}
 
