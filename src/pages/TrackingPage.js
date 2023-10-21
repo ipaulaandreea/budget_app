@@ -22,7 +22,6 @@ const TrackingPage = () => {
 export default TrackingPage;
 
 async function getTransactions () {
-  console.log('merge' )
   try {
     const querySnapshot  = await getDocs(transactionsCollectionRef)
     // console.log(docSnap.data() )
@@ -30,8 +29,9 @@ async function getTransactions () {
 
     querySnapshot.forEach((doc) => {
       // You can access each document's data using doc.data()
-      loadedTransactions.push(doc.data());
+      loadedTransactions.push({'id': doc.id, 'data': doc.data()});
     });
+
     console.log(loadedTransactions)
     return loadedTransactions;
     // if (!response.ok) {

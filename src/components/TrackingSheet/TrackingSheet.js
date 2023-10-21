@@ -1,6 +1,12 @@
+import { useState, useEffect } from 'react' 
 import { Container, Table } from "react-bootstrap";
+import deleteTransaction from '../TransactionItem/DeleteTransaction'
+import editTransaction from '../TransactionItem/EditTransaction'
+
 
 const TrackingSheet = ({transactions}) => {
+
+
   return (
     <>
       <Container>
@@ -16,16 +22,19 @@ const TrackingSheet = ({transactions}) => {
             <th>Category</th>
             <th>Subcategory</th>
             <th>Amount</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
           {transactions.map((transaction)=> (
             <tr>
             {/* <td>{transaction.date.toDate().toLocaleString()}</td> */}
-            <td>{transaction.transaction}</td>
-            <td>{transaction.category}</td>
-            <td>{transaction.subcategory}</td>
-            <td>{transaction.amount}</td>
+            <td>{transaction.data.transaction}</td>
+            <td>{transaction.data.category}</td>
+            <td>{transaction.data.subcategory}</td>
+            <td>{transaction.data.amount}</td>
+            <td><button onClick = {()=>editTransaction(transaction.id)}>Edit</button></td>
+            <td><button onClick = {()=>deleteTransaction(transaction.id)}>Delete</button></td>
             </tr>
           ))}
         </tbody>
@@ -33,5 +42,6 @@ const TrackingSheet = ({transactions}) => {
     </>
   );
 };
+
 
 export default TrackingSheet;
