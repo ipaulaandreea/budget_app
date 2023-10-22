@@ -5,8 +5,17 @@ import editTransaction from '../TransactionItem/EditTransaction'
 
 
 const TrackingSheet = ({transactions}) => {
+  console.log(transactions);
+const [transactionsState, setTransactionsState] = useState(transactions);
 
+useEffect(() => {
+  setTransactionsState(transactions);
+}, [transactions]);
 
+const deleteHandler = async (id)=>{
+  await deleteTransaction(id)
+  setTransactionsState(transactionsState.filter(transaction => transaction.id !== id))
+}
   return (
     <>
       <Container>
@@ -26,7 +35,7 @@ const TrackingSheet = ({transactions}) => {
           </tr>
         </thead>
         <tbody>
-          {transactions.map((transaction)=> (
+          {transactionsState.map((transaction)=> (
             <tr>
             {/* <td>{transaction.date.toDate().toLocaleString()}</td> */}
             <td>{transaction.data.transaction}</td>
@@ -34,7 +43,7 @@ const TrackingSheet = ({transactions}) => {
             <td>{transaction.data.subcategory}</td>
             <td>{transaction.data.amount}</td>
             <td><button onClick = {()=>editTransaction(transaction.id)}>Edit</button></td>
-            <td><button onClick = {()=>deleteTransaction(transaction.id)}>Delete</button></td>
+            <td><button onClick = {()=>deleteHandler(transaction.id)}>Delete</button></td>
             </tr>
           ))}
         </tbody>

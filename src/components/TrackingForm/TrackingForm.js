@@ -145,6 +145,8 @@ export async function action({ request, params }) {
 
   try {
     await addDoc(transactionsCollectionRef, transactionData);
+    
+
   } catch (err) {
     console.log(err);
   }
