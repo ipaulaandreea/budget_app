@@ -132,7 +132,7 @@ const TrackingForm = ({ method, expense }) => {
 export default TrackingForm;
 
 export async function action({ request, params }) {
-  // const method = request.method;
+  const method = request.method;
   const data = await request.formData();
 
   const transactionData = {
@@ -143,6 +143,20 @@ export async function action({ request, params }) {
     amount: data.get("amount"),
   };
 
+  if (method === 'PATCH') {
+    const transactionId = data.get("id");
+    console.log(transactionId)
+    const transaction = db.collection('transactions').doc(transactionId);
+    const updatedTransaction = {
+      transaction: data.get("transaction"),
+      category: data.get("category"),
+      subcategory: data.get("subcategory"),
+      amount: data.get("amount")
+
+    }
+    return transaction.update(updatedTransaction)
+  
+  }
   try {
     await addDoc(transactionsCollectionRef, transactionData);
     
