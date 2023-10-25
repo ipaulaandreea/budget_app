@@ -2,8 +2,14 @@ import TrackingForm from "./TrackingForm/TrackingForm";
 
 const AddTransaction = () => {
 
-  return <TrackingForm method = 'post' />;
-};
+  return (
+    <>
+    <h3>Add New Transaction: </h3>
+    <TrackingForm method = 'POST' />
+    </>
+  )
+
+}
 
 export default AddTransaction;
 

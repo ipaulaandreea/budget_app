@@ -3,12 +3,21 @@ import { Container, Col } from "react-bootstrap";
 import { Form as BForm } from "react-bootstrap";
 import { Form, useNavigate, useActionData, redirect } from "react-router-dom";
 import classes from "./TrackingForm.module.css";
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc, doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../../config/firebase";
+import store from "../../store/index";
+
+import { useDispatch, useSelector } from 'react-redux';
+import { modalActions } from '../../store/modal'
+
+
 
 const transactionsCollectionRef = collection(db, "transactions");
 
 const TrackingForm = ({ method, expense }) => {
+  const dispatch = useDispatch();
+
+
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedSubcategory, setSelectedSubcategory] = useState("");
 
@@ -53,12 +62,11 @@ const TrackingForm = ({ method, expense }) => {
   };
 
   const cancelHandler = () => {
-    navigate("..");
+     dispatch(modalActions.hideModal());
   };
 
   return (
     <Container>
-      <h3>Add New Transaction: </h3>
       <Form method={method}>
         {data && data.errors && (
           <ul>
@@ -132,37 +140,49 @@ const TrackingForm = ({ method, expense }) => {
 export default TrackingForm;
 
 export async function action({ request, params }) {
+  //adu state ul din redux, ia i id ul, si peste id ul ala adauga datele din formData(), pt ca formData merge
   const method = request.method;
   const data = await request.formData();
 
-  const transactionData = {
-    // date: data.get('date').unix(),
-    transaction: data.get("transaction"),
-    category: data.get("category"),
-    subcategory: data.get("subcategory"),
-    amount: data.get("amount"),
-  };
 
-  if (method === 'PATCH') {
-    const transactionId = data.get("id");
-    console.log(transactionId)
-    const transaction = db.collection('transactions').doc(transactionId);
+
+  if (method === "POST") {
+    const transactionData = {
+      // date: data.get('date').unix(),
+      transaction: data.get("transaction"),
+      category: data.get("category"),
+      subcategory: data.get("subcategory"),
+      amount: data.get("amount"),
+    };
+
+    try {
+      await addDoc(transactionsCollectionRef, transactionData);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  if (method === "PUT") {
+    const state = store.getState();
+    const selectedTransaction = state.transaction.selectedTransaction;
+    const transactionId = selectedTransaction.id.toString();
+    const docRef = doc(transactionsCollectionRef, transactionId);
+    const docSnap = await getDoc(docRef);
+    console.log(docSnap.data());
+
     const updatedTransaction = {
       transaction: data.get("transaction"),
       category: data.get("category"),
       subcategory: data.get("subcategory"),
-      amount: data.get("amount")
-
-    }
-    return transaction.update(updatedTransaction)
-  
-  }
-  try {
-    await addDoc(transactionsCollectionRef, transactionData);
-    
-
-  } catch (err) {
-    console.log(err);
+      amount: data.get("amount"),
+    };
+    updateDoc(docRef, updatedTransaction)
+      .then(function () {
+        console.log("Document successfully updated.");
+      })
+      .catch(function (error) {
+        console.error("Error updating document:", error);
+      });
   }
 
   return redirect("/tracker");

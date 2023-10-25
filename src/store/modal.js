@@ -8,18 +8,36 @@ const modalSlice = createSlice({
   name: "modal",
   initialState: {
     displayModal: false,
+    isEditting: false,
+    isAdding: true,
   },
   reducers: {
-    
     displayModal(state) {
-      console.log('im in redux')
       return {
-      ...state, displayModal: true
-      }
-     
+        ...state,
+        displayModal: true,
+      };
     },
     hideModal(state) {
       state.displayModal = false;
+    },
+
+    isAdding(state) {
+      return {
+        ...state,
+        displayModal: true,
+        isAdding: true,
+        isEditting: false,
+      };
+    },
+
+    isEditting(state) {
+      return {
+        ...state,
+        displayModal: true,
+        isAdding: false,
+        isEditting: true,
+      };
     },
   },
 });

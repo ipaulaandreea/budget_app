@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react' 
 import { Container, Table } from "react-bootstrap";
 import deleteTransaction from '../TransactionItem/DeleteTransaction'
-import EditTransaction from '../EditTransaction'
 import EditModal from '../UI/EditModal/EditModal'
-
+import {transactionActions } from '../../store/transaction'
 
 import { useSelector, useDispatch } from 'react-redux'
 import { modalActions } from '../../store/modal' 
@@ -14,7 +13,7 @@ const TrackingSheet = ({transactions}) => {
 
 const [transactionsState, setTransactionsState] = useState(transactions);
 // const [showEditModal, setShowEditModal] = useState(false);
-const [selectedTransaction, setSelectedTransaction]=useState(null)
+// const [selectedTransaction, setSelectedTransaction]=useState(null)
 
 useEffect(() => {
   setTransactionsState(transactions);
@@ -26,13 +25,18 @@ const deleteHandler = async (id)=>{
 }
 
 const editHandler = (transaction) => {
-  console.log('im here')
-  setSelectedTransaction(transaction)
+  dispatch(transactionActions.selectTransaction(transaction));
   // setShowEditModal(true); 
+  dispatch(modalActions.isEditting())
   dispatch(modalActions.displayModal());
 
 
+
 };
+
+const addHandler = () => {
+  dispatch(modalActions.isAdding());
+}
 
 // const hideModal = () => {
 //   // setShowEditModal(false)
@@ -45,7 +49,7 @@ const editHandler = (transaction) => {
       <EditModal/>
     }
       <Container>
-        
+        <button onClick = {addHandler}>Add transaction </button>
         <h1>Transactions tracker</h1>
         <h1>Your Balance</h1>
         <h1>10$</h1>
