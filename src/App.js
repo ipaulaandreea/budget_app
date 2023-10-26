@@ -6,6 +6,7 @@ import TrackingPage,  { loader as transactionsLoader } from './pages/TrackingPag
 import RootLayout from './pages/Root';
 import BudgetPlannerPage from './pages/BudgetPlanner'
 import InstructionsPage from './pages/Instructions'
+import BudgetSetterPage from './pages/BudgetSetter'
 import { action as manipulateExpenseAction } from './components/TrackingForm/TrackingForm';
 function App() {
 
@@ -17,7 +18,9 @@ function App() {
         { index: true, element: <HomePage /> },
         {path: 'tracker', element: <TrackingPage />, loader: transactionsLoader, action: manipulateExpenseAction},
 
-        {path: 'budget', element: <BudgetPlannerPage/>},
+        {path: 'budget-planner', element: <BudgetPlannerPage/>},
+        
+        {path: 'set-budget', element: <BudgetSetterPage/>},
         {path: 'instructions', element: <InstructionsPage/>}
 
       ]}])

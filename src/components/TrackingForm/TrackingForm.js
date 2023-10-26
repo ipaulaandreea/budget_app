@@ -7,7 +7,7 @@ import { collection, addDoc, doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../../config/firebase";
 import store from "../../store/index";
 
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { modalActions } from '../../store/modal'
 
 
