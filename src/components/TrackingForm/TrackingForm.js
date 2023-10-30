@@ -140,7 +140,6 @@ const TrackingForm = ({ method, expense }) => {
 export default TrackingForm;
 
 export async function action({ request, params }) {
-  //adu state ul din redux, ia i id ul, si peste id ul ala adauga datele din formData(), pt ca formData merge
   const method = request.method;
   const data = await request.formData();
 

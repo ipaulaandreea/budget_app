@@ -51,8 +51,10 @@ const addHandler = () => {
       <Container>
         <button onClick = {addHandler}>Add transaction </button>
         <h1>Transactions tracker</h1>
-        <h1>Your Balance</h1>
-        <h1>10$</h1>
+        <h3>Left to spend</h3>
+        <h3>10$</h3>
+        <h3>Expenses</h3>
+        <h3>500$</h3>
       </Container>
       <Table striped bordered hover>
         <thead>
