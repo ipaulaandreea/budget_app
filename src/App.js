@@ -6,8 +6,9 @@ import TrackingPage,  { loader as transactionsLoader } from './pages/TrackingPag
 import RootLayout from './pages/Root';
 import BudgetPlannerPage from './pages/BudgetPlanner'
 import InstructionsPage from './pages/Instructions'
-import BudgetSetterPage from './pages/BudgetSetter'
+import BudgetSetterPage, {loader as budgetSettingLoader} from './pages/BudgetSetter'
 import { action as manipulateExpenseAction } from './components/TrackingForm/TrackingForm';
+import { action as addNewCategoryAction } from './components/UI/Row/Row'
 function App() {
 
   const router = createBrowserRouter([
@@ -20,7 +21,7 @@ function App() {
 
         {path: 'budget-planner', element: <BudgetPlannerPage/>},
         
-        {path: 'set-budget', element: <BudgetSetterPage/>},
+        {path: 'set-budget', element: <BudgetSetterPage/>, loader: budgetSettingLoader, action: addNewCategoryAction},
         {path: 'instructions', element: <InstructionsPage/>}
 
       ]}])

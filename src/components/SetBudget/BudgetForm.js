@@ -16,30 +16,48 @@ import store from "../../store/index";
 import { useDispatch } from "react-redux";
 
 const BudgetForm = () => {
-  async function showDataFromFirebase() {
+
+  async function showFirebaseDataByMonth(month) {
     let transactionsByMonth = [];
     let expensesByMonth = [];
     let incomeByMonth = [];
 
-    const transactionRef = collection(db, "budget", "2023", "february");
+    const transactionRef = collection(db, "budget", "2023", month);
     try {
       const res = await getDocs(transactionRef);
       if (res) {
         res.forEach((item) => {
           console.log(item.data());
           transactionsByMonth.push(item.data());
+
+        })
+        console.log(typeof transactionsByMonth);
+
+        transactionsByMonth.forEach((transaction) => {
+          if (transaction.type === 'expense') {
+            expensesByMonth.push(transaction)
+          } else {
+            incomeByMonth.push(transaction)
+          }
+
         });
+
+        
       } else {
         console.log("No such document!");
       }
     } catch (error) {
       console.error("Error getting document:", error);
     }
-    return transactionsByMonth;
+
+    console.log('expenses by month:',expensesByMonth);
+    console.log('income by monthe:',incomeByMonth);
   }
 
   return (
-    <button onClick={showDataFromFirebase}>Click me to see firestore db</button>
+    <button onClick={() => showFirebaseDataByMonth("february")}>
+      Click me to see firestore db
+    </button>
   );
 };
 

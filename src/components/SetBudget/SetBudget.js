@@ -10,15 +10,34 @@ import {
 import { months, years } from "./DateOptions";
 import { useState } from "react";
 import Row from "../UI/Row/Row";
-import BudgetForm from './BudgetForm'
+import BudgetForm from "./BudgetForm";
 
-const SetBudget = () => {
+const SetBudget = ({ expensesByMonth, incomeByMonth }) => {
   const [selectedYear, setSelectedYear] = useState(null);
   const [selectedMonth, setSelectedMonth] = useState(null);
   const [incomeCategories, setIncomeCategories] = useState([]);
   const [expenseCategories, setExpenseCategories] = useState([]);
 
-  // console.log(selectedYear)
+  
+  console.log({ expensesByMonth, incomeByMonth });
+  
+
+  
+  const getIncomeTotal = () => {
+    let incomeTotal = 0;
+    incomeByMonth.forEach((income) =>
+    incomeTotal+=income.actual
+    )
+    return incomeTotal;
+  }
+
+  const getExpenseTotal = () => {
+    let expenseTotal = 0;
+    expensesByMonth.forEach((expense) =>
+    expenseTotal+=expense.actual
+    )
+    return expenseTotal;
+  }
 
   const selectedYearHandler = (year) => {
     console.log(year.value);
@@ -37,6 +56,16 @@ const SetBudget = () => {
     };
 
     setIncomeCategories((prevState) => [...prevState, newIncomeCategory]);
+  };
+
+  const addExpenseCategoryHandler = () => {
+    const newExpenseCategory = {
+      name: "new",
+      expected: "0",
+      actual: "0",
+    };
+
+    setExpenseCategories((prevState) => [...prevState, newExpenseCategory]);
   };
 
   return (
@@ -69,7 +98,7 @@ const SetBudget = () => {
         </Dropdown.Menu>
       </Dropdown>
       <Container>
-        <BudgetForm/>
+        <BudgetForm />
         <p>
           Your budget for: {selectedMonth} {selectedYear}
         </p>
@@ -80,7 +109,7 @@ const SetBudget = () => {
         >
           <Tab eventKey="income" title="Income">
             <p>Income</p>
-            <p>Total: 100$</p>
+            <p>Total earned: {getIncomeTotal()}$</p>
             <Table striped bordered hover>
               <thead>
                 <tr>
@@ -90,9 +119,17 @@ const SetBudget = () => {
                 </tr>
               </thead>
               <tbody>
+                {incomeByMonth.map((income) => (
+                  <tr>
+                    <td>{income.name}</td>
+                    <td>{income.expected}</td>
+                    <td>{income.actual}</td>
+                  </tr>
+                ))}
                 {incomeCategories.map((category) => (
                   <Row />
                 ))}
+
                 <tr>
                   <td>
                     <button onClick={addIncomeCategoryHandler}>
@@ -108,7 +145,7 @@ const SetBudget = () => {
           </Tab>
           <Tab eventKey="expenses" title="Expenses">
             <p>Expenses</p>
-            <p>Left to allocate: 15$</p>
+            <p>Total spent: {getExpenseTotal()}$</p>
             <Table striped bordered hover>
               <thead>
                 <tr>
@@ -118,15 +155,25 @@ const SetBudget = () => {
                 </tr>
               </thead>
               <tbody>
+                {expensesByMonth.map((expense) => (
+                  <tr>
+                    <td>{expense.name}</td>
+                    <td>{expense.expected}</td>
+                    <td>{expense.actual}</td>
+                  </tr>
+                ))}
+                {expenseCategories.map((category) => (
+                  <Row />
+                ))}
                 <tr>
-                  <td>Mark</td>
-                  <td>Otto</td>
-                  <td>@mdo</td>
-                </tr>
-                <tr>
-                  <td>2</td>
-                  <td>Jacob</td>
-                  <td>Thornton</td>
+                  <td>
+                    <button onClick={addExpenseCategoryHandler}>
+                      Create new category...
+                    </button>
+                  </td>
+
+                  <td></td>
+                  <td></td>
                 </tr>
               </tbody>
             </Table>
