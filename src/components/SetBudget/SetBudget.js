@@ -11,6 +11,7 @@ import { months, years } from "./DateOptions";
 import { useState } from "react";
 import Row from "../UI/Row/Row";
 import BudgetForm from "./BudgetForm";
+import AddBudgetCategory from '../AddBudgetCategory'
 
 const SetBudget = ({ expensesByMonth, incomeByMonth }) => {
   const [selectedYear, setSelectedYear] = useState(null);
@@ -127,7 +128,14 @@ const SetBudget = ({ expensesByMonth, incomeByMonth }) => {
                   </tr>
                 ))}
                 {incomeCategories.map((category) => (
-                  <Row />
+                <tr>
+                  <td>
+                  <AddBudgetCategory />
+                  </td>
+                  <td></td>
+                  <td></td>
+                  </tr>
+                 
                 ))}
 
                 <tr>
@@ -163,7 +171,7 @@ const SetBudget = ({ expensesByMonth, incomeByMonth }) => {
                   </tr>
                 ))}
                 {expenseCategories.map((category) => (
-                  <Row />
+                  <AddBudgetCategory />
                 ))}
                 <tr>
                   <td>

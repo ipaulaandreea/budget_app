@@ -35,6 +35,14 @@ function MainNavigation() {
               Instructions{" "}
             </NavLink>
             <NavLink
+              to="budget-categories"
+              className={({ isActive }) =>
+                isActive ? classes.active : undefined
+              }
+            >
+              Budget Categories
+            </NavLink>
+            <NavLink
               to="tracker"
               className={({ isActive }) =>
                 isActive ? classes.active : undefined

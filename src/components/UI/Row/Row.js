@@ -1,57 +1,49 @@
-import { Form as CForm} from "react-bootstrap";
-import { InputGroup, Button } from 'react-bootstrap'
-import { Form, useNavigate, useActionData, redirect } from "react-router-dom";
+import { Form } from "react-router-dom";
+import {onSnapshot, query, collection, where, addDoc, doc, getDoc, getDocs, updateDoc } from "firebase/firestore";
+import { db } from "../../../config/firebase";
 
 
-const Row = () => {
-
-  const data = useActionData();
+const budgetRef = collection (db, "budget")
 
 
 
+const Row = ({ method }) => {
 
   return (
-    
-    <tr>
-      <td>
-      <Form method="post">
-        {/* {" "} */}
-        <CForm>
-          <InputGroup className="mb-3">
-            <CForm.Control
-              placeholder="Enter category name..."
-              aria-label="Category name"
-              aria-describedby="basic-addon1"
-            />
-          </InputGroup>
-          <Button>Save</Button>
-        </CForm>
-       </Form>
-      </td>
  
-      <td> 0
-        {/* {" "}
-        <InputGroup className="mb-3">
-          <CForm.Control
-            placeholder="Entered expected amount..."
-            aria-label="Expected amount"
-            aria-describedby="basic-addon1"
-          />
-        </InputGroup>{" "}
-        <Button>Save</Button> */}
-      </td>
-      <td> 0 </td>
-    </tr>
-
-
+      <Form method={method}>
+      <input type="text" id="category" name="category" placeholder="Enter category name..."/>
+      <input type="text" id="expected" name="expected" placeholder="Enter expected amount..."/>
+      <button type="submit">Save</button>
+      </Form>
 
   );
 };
 
 export default Row;
 
-export async function action({ request, params }) {
+export async function action({ request, params, categoryData }) {
   const method = request.method;
-  const data = await request.formData();
-  console.log(data)
+
+  if (method === "POST") {
+    try {
+      const data = await request.formData();
+      const categoryData = {
+        name: data.get("category"),
+        expected: data.get("expected")
+      };
+
+      console.log('categoryData', categoryData)
+      
+
+      
+
+
+    } catch (error) {
+      console.error(error);
+
+    }
+  }
+
+  return null;
 }
