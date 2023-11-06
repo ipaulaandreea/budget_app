@@ -8,10 +8,11 @@ import {
   Tabs,
 } from "react-bootstrap";
 import { months, years } from "./DateOptions";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Row from "../UI/Row/Row";
 import BudgetForm from "./BudgetForm";
 import AddBudgetCategory from '../AddBudgetCategory'
+import getFunc from '../SetBudget/getCategories'
 
 const SetBudget = ({ expensesByMonth, incomeByMonth }) => {
   const [selectedYear, setSelectedYear] = useState(null);
@@ -19,9 +20,29 @@ const SetBudget = ({ expensesByMonth, incomeByMonth }) => {
   const [incomeCategories, setIncomeCategories] = useState([]);
   const [expenseCategories, setExpenseCategories] = useState([]);
 
+  const [fetchedIncomeCategories, setFetchedIncomeCategories] = useState([]);
+  const [fetchedExpensesCategories, setFetchedExpensesCategories] = useState([]);
+
   
   console.log({ expensesByMonth, incomeByMonth });
   
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const categories = await getFunc();
+        setFetchedIncomeCategories(categories.incomeCategories);
+        setFetchedExpensesCategories(categories.expensesCategories);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    }
+
+    fetchData();
+  }, []);
+
+  console.log('fetchedIncomeCategoriesState:', fetchedIncomeCategories)
+  console.log('fetchedExpensesCategoriesState:', fetchedExpensesCategories)
 
   
   const getIncomeTotal = () => {
@@ -110,7 +131,7 @@ const SetBudget = ({ expensesByMonth, incomeByMonth }) => {
         >
           <Tab eventKey="income" title="Income">
             <p>Income</p>
-            <p>Total earned: {getIncomeTotal()}$</p>
+            <p>Total: {getIncomeTotal()}$</p>
             <Table striped bordered hover>
               <thead>
                 <tr>
@@ -120,11 +141,11 @@ const SetBudget = ({ expensesByMonth, incomeByMonth }) => {
                 </tr>
               </thead>
               <tbody>
-                {incomeByMonth.map((income) => (
+                {fetchedIncomeCategories.map((income) => (
                   <tr>
-                    <td>{income.name}</td>
-                    <td>{income.expected}</td>
-                    <td>{income.actual}</td>
+                    <td>{income['category_name']}</td>
+                    <td>{income['amount_expected']}</td>
+                    <td>N/A</td>
                   </tr>
                 ))}
                 {incomeCategories.map((category) => (
@@ -163,11 +184,11 @@ const SetBudget = ({ expensesByMonth, incomeByMonth }) => {
                 </tr>
               </thead>
               <tbody>
-                {expensesByMonth.map((expense) => (
+                {fetchedExpensesCategories.map((expense) => (
                   <tr>
-                    <td>{expense.name}</td>
-                    <td>{expense.expected}</td>
-                    <td>{expense.actual}</td>
+                   <td>{expense['category_name']}</td>
+                    <td>{expense['amount_expected']}</td>
+                    <td>N/A</td>
                   </tr>
                 ))}
                 {expenseCategories.map((category) => (
