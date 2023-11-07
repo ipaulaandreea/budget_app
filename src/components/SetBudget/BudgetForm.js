@@ -1,22 +1,9 @@
 import { useState } from "react";
 
-import { Form, useNavigate, useActionData, redirect } from "react-router-dom";
-
-import {
-  doc,
-  collection,
-  addDoc,
-  getDoc,
-  getDocs,
-  updateDoc,
-} from "firebase/firestore";
+import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../config/firebase";
-import store from "../../store/index";
-
-import { useDispatch } from "react-redux";
 
 const BudgetForm = () => {
-
   async function showFirebaseDataByMonth(month) {
     let transactionsByMonth = [];
     let expensesByMonth = [];
@@ -29,20 +16,16 @@ const BudgetForm = () => {
         res.forEach((item) => {
           console.log(item.data());
           transactionsByMonth.push(item.data());
-
-        })
+        });
         console.log(typeof transactionsByMonth);
 
         transactionsByMonth.forEach((transaction) => {
-          if (transaction.type === 'expense') {
-            expensesByMonth.push(transaction)
+          if (transaction.type === "expense") {
+            expensesByMonth.push(transaction);
           } else {
-            incomeByMonth.push(transaction)
+            incomeByMonth.push(transaction);
           }
-
         });
-
-        
       } else {
         console.log("No such document!");
       }
@@ -50,8 +33,8 @@ const BudgetForm = () => {
       console.error("Error getting document:", error);
     }
 
-    console.log('expenses by month:',expensesByMonth);
-    console.log('income by monthe:',incomeByMonth);
+    console.log("expenses by month:", expensesByMonth);
+    console.log("income by month:", incomeByMonth);
   }
 
   return (
@@ -60,12 +43,5 @@ const BudgetForm = () => {
     </button>
   );
 };
-
-// export async function getBudgetCategoriesByYear (year) {
-
-//     const docRef = doc(budgetCollectionRef, '2023');
-//     const docSnap = await getDoc(docRef);
-//     console.log(docSnap.data())
-// }
 
 export default BudgetForm;

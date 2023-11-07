@@ -1,84 +1,46 @@
-import {
-    Container,
-    Dropdown,
-    Form,
-    InputGroup,
-    Table,
-    Tab,
-    Tabs,
-  } from "react-bootstrap";
-
-import AddBudgetCategory from '../components/AddBudgetCategory'
-
-import {
-  doc,
-  collection,
-  addDoc,
-  getDoc,
-  getDocs,
-  updateDoc,
-} from "firebase/firestore";
+import { Container } from "react-bootstrap";
+import { collection, getDocs } from "firebase/firestore";
 import { db } from "../config/firebase";
-import { useLoaderData, Await, defer } from 'react-router-dom';
+import { useLoaderData, Await, defer } from "react-router-dom";
+import AddCategories from "../components/AddCategories/AddCategories";
 
-
-const categoriesRef = collection (db, "categoriesUpdated")
-
-
-
-
+const categoriesRef = collection(db, "categoriesUpdated");
 
 const BudgetCategoriesPage = () => {
-  const { categories } = useLoaderData();
-return (
-    <Table striped bordered hover>
-    <thead>
-      <tr>
-        <th>Budget Category</th>
-        <th>Type</th>
-      </tr>
-    </thead>
-    <tbody>
-      {categories.map((category) => (
-        <tr>
-         <th>{category.category_name}</th>
-         <th>{category.type}</th>
-         </tr>
-      )
-      )
-      }
-        </tbody>
-        <tr>
+  const categories = useLoaderData();
+  console.log(categories);
 
-        </tr>
-        </Table>
-)
-
-
-
-}
+  return (
+    <Await resolve={categories}>
+      {(loadedCategories) => (
+        <Container>
+          <AddCategories categories={loadedCategories.categories} />
+        </Container>
+      )}
+    </Await>
+  );
+};
 
 export default BudgetCategoriesPage;
 
 export async function getCategories() {
-  let categories = []
+  let categories = [];
   try {
     const res = await getDocs(categoriesRef);
     if (res) {
       res.forEach((item) => {
         console.log(item.data());
         categories.push(item.data());
-  
-      })
+      });
     }
     return categories;
+  } catch (error) {
+    console.error("Error getting document:", error);
   }
- catch (error) {
-  console.error("Error getting document:", error);
-}
 }
 
 export async function loader() {
-  const categories = await getCategories();
-  return defer({categories});
+  let categories = await getCategories();
+  console.log(categories);
+  return defer({ categories });
 }

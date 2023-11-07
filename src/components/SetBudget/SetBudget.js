@@ -1,36 +1,36 @@
-import {
-  Container,
-  Dropdown,
-  Form,
-  InputGroup,
-  Table,
-  Tab,
-  Tabs,
-} from "react-bootstrap";
+import { Container, Table, Tab, Tabs, Dropdown } from "react-bootstrap";
 import { months, years } from "./DateOptions";
 import { useState, useEffect } from "react";
-import Row from "../UI/Row/Row";
 import BudgetForm from "./BudgetForm";
-import AddBudgetCategory from '../AddBudgetCategory'
-import getFunc from '../SetBudget/getCategories'
+import AddBudgetCategory from "../AddBudgetCategory";
+import getFunc from "./getBudgetEntries";
+import { useSelector, useDispatch } from "react-redux";
+import { budgetCategoryActions } from "../../store/budgetcategories";
 
 const SetBudget = ({ expensesByMonth, incomeByMonth }) => {
   const [selectedYear, setSelectedYear] = useState(null);
   const [selectedMonth, setSelectedMonth] = useState(null);
-  const [incomeCategories, setIncomeCategories] = useState([]);
-  const [expenseCategories, setExpenseCategories] = useState([]);
 
   const [fetchedIncomeCategories, setFetchedIncomeCategories] = useState([]);
-  const [fetchedExpensesCategories, setFetchedExpensesCategories] = useState([]);
+  const [fetchedExpensesCategories, setFetchedExpensesCategories] = useState(
+    []
+  );
 
-  
   console.log({ expensesByMonth, incomeByMonth });
-  
+
+  const dispatch = useDispatch();
+  const isAddingBudgetCategory = useSelector(
+    (state) => state.budgetCategory.isAddingBudgetCategory
+  );
+
+  const addBudgetCategoryHandler = () => {
+    dispatch(budgetCategoryActions.addBudgetCategory());
+  };
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const categories = await getFunc();
+        let categories = await getFunc();
         setFetchedIncomeCategories(categories.incomeCategories);
         setFetchedExpensesCategories(categories.expensesCategories);
       } catch (error) {
@@ -41,25 +41,22 @@ const SetBudget = ({ expensesByMonth, incomeByMonth }) => {
     fetchData();
   }, []);
 
-  console.log('fetchedIncomeCategoriesState:', fetchedIncomeCategories)
-  console.log('fetchedExpensesCategoriesState:', fetchedExpensesCategories)
+  // useEffect(() => {
+  //   setFetchedIncomeCategories(incomeByMonth.categories);
+  //   setFetchedExpensesCategories(expensesByMonth.categories)
+  // }, [incomeByMonth, expensesByMonth ]);
 
-  
   const getIncomeTotal = () => {
     let incomeTotal = 0;
-    incomeByMonth.forEach((income) =>
-    incomeTotal+=income.actual
-    )
+    incomeByMonth.forEach((income) => (incomeTotal += income.actual));
     return incomeTotal;
-  }
+  };
 
   const getExpenseTotal = () => {
     let expenseTotal = 0;
-    expensesByMonth.forEach((expense) =>
-    expenseTotal+=expense.actual
-    )
+    expensesByMonth.forEach((expense) => (expenseTotal += expense.actual));
     return expenseTotal;
-  }
+  };
 
   const selectedYearHandler = (year) => {
     console.log(year.value);
@@ -70,25 +67,6 @@ const SetBudget = ({ expensesByMonth, incomeByMonth }) => {
     setSelectedMonth(month.value);
   };
 
-  const addIncomeCategoryHandler = () => {
-    const newIncomeCategory = {
-      name: "new",
-      expected: "0",
-      actual: "0",
-    };
-
-    setIncomeCategories((prevState) => [...prevState, newIncomeCategory]);
-  };
-
-  const addExpenseCategoryHandler = () => {
-    const newExpenseCategory = {
-      name: "new",
-      expected: "0",
-      actual: "0",
-    };
-
-    setExpenseCategories((prevState) => [...prevState, newExpenseCategory]);
-  };
 
   return (
     <>
@@ -143,26 +121,26 @@ const SetBudget = ({ expensesByMonth, incomeByMonth }) => {
               <tbody>
                 {fetchedIncomeCategories.map((income) => (
                   <tr>
-                    <td>{income['category_name']}</td>
-                    <td>{income['amount_expected']}</td>
+                    <td>{income["category_name"]}</td>
+                    <td>{income["amount_expected"]}</td>
                     <td>N/A</td>
                   </tr>
                 ))}
-                {incomeCategories.map((category) => (
-                <tr>
-                  <td>
-                  <AddBudgetCategory />
-                  </td>
-                  <td></td>
-                  <td></td>
+
+                {isAddingBudgetCategory && (
+                  <tr>
+                    <td>
+                      <AddBudgetCategory />
+                    </td>
+                    <td></td>
+                    <td></td>
                   </tr>
-                 
-                ))}
+                )}
 
                 <tr>
                   <td>
-                    <button onClick={addIncomeCategoryHandler}>
-                      Create new category...
+                    <button onClick={addBudgetCategoryHandler}>
+                      Select category
                     </button>
                   </td>
 
@@ -186,18 +164,24 @@ const SetBudget = ({ expensesByMonth, incomeByMonth }) => {
               <tbody>
                 {fetchedExpensesCategories.map((expense) => (
                   <tr>
-                   <td>{expense['category_name']}</td>
-                    <td>{expense['amount_expected']}</td>
+                    <td>{expense["category_name"]}</td>
+                    <td>{expense["amount_expected"]}</td>
                     <td>N/A</td>
                   </tr>
                 ))}
-                {expenseCategories.map((category) => (
-                  <AddBudgetCategory />
-                ))}
+                {isAddingBudgetCategory && (
+                  <tr>
+                    <td>
+                      <AddBudgetCategory />
+                    </td>
+                    <td></td>
+                    <td></td>
+                  </tr>
+                )}
                 <tr>
                   <td>
-                    <button onClick={addExpenseCategoryHandler}>
-                      Create new category...
+                    <button onClick={addBudgetCategoryHandler}>
+                      Select category
                     </button>
                   </td>
 

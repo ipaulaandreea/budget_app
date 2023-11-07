@@ -10,7 +10,9 @@ import BudgetSetterPage, {loader as budgetSettingLoader} from './pages/BudgetSet
 import { action as manipulateExpenseAction } from './components/TrackingForm/TrackingForm';
 import { action as addNewCategoryAction } from './components/UI/Row/Row'
 import BudgetCategoriesPage from './pages/BudgetCategoriesPage'
-import { loader as fetchCategoriesLoader} from './pages/BudgetCategoriesPage'
+// import { loader as fetchCategoriesLoader} from './pages/BudgetCategoriesPage'
+import {loader as addCategoryLoader} from './pages/BudgetCategoriesPage'
+import {action as addCategoryToDbAction} from './components/AddCategories/addCategoryFunc'
 function App() {
 
   const router = createBrowserRouter([
@@ -25,7 +27,7 @@ function App() {
         
         {path: 'set-budget', element: <BudgetSetterPage/>, loader: budgetSettingLoader, action: addNewCategoryAction},
         {path: 'instructions', element: <InstructionsPage/>},
-        {path: 'budget-categories', element: <BudgetCategoriesPage/>, loader: fetchCategoriesLoader}
+        {path: 'budget-categories', element: <BudgetCategoriesPage/>, loader: addCategoryLoader, action: addCategoryToDbAction}
 
       ]}])
       return <RouterProvider router={router} />;
