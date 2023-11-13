@@ -1,9 +1,10 @@
 import { Container, Table, Tab, Tabs, Dropdown } from "react-bootstrap";
 import { months, years } from "./DateOptions";
-import { useState, useEffect } from "react";
-import BudgetForm from "./BudgetForm";
+import { useState } from "react";
+
+
 import AddBudgetCategory from "../AddBudgetCategory";
-import getFunc from "./getBudgetEntries";
+
 import { useSelector, useDispatch } from "react-redux";
 import { budgetCategoryActions } from "../../store/budgetcategories";
 
@@ -11,52 +12,40 @@ const SetBudget = ({ expensesByMonth, incomeByMonth }) => {
   const [selectedYear, setSelectedYear] = useState(null);
   const [selectedMonth, setSelectedMonth] = useState(null);
 
-  const [fetchedIncomeCategories, setFetchedIncomeCategories] = useState([]);
-  const [fetchedExpensesCategories, setFetchedExpensesCategories] = useState(
-    []
-  );
+  const incomeEntries = useSelector((state) => state.budgetItem.incomeBudgetEntries);
+  const expensesEntries = useSelector((state) => state.budgetItem.expensesBudgetEntries);
 
-  console.log({ expensesByMonth, incomeByMonth });
+  // console.log({ expensesByMonth, incomeByMonth });
 
   const dispatch = useDispatch();
-  const isAddingBudgetCategory = useSelector(
-    (state) => state.budgetCategory.isAddingBudgetCategory
+
+  const isAddingIncomeCategory = useSelector(
+    (state) => state.budgetCategory.isAddingIncomeCategory
+  );
+  const isAddingExpensesCategory = useSelector(
+    (state) => state.budgetCategory.isAddingExpensesCategory
   );
 
-  const addBudgetCategoryHandler = () => {
-    dispatch(budgetCategoryActions.addBudgetCategory());
+  const addIncomeCategoryHandler = () => {
+    dispatch(budgetCategoryActions.addIncomeCategory());
   };
 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        let categories = await getFunc();
-        setFetchedIncomeCategories(categories.incomeCategories);
-        setFetchedExpensesCategories(categories.expensesCategories);
-      } catch (error) {
-        console.error("Error fetching categories:", error);
-      }
-    }
-
-    fetchData();
-  }, []);
-
-  // useEffect(() => {
-  //   setFetchedIncomeCategories(incomeByMonth.categories);
-  //   setFetchedExpensesCategories(expensesByMonth.categories)
-  // }, [incomeByMonth, expensesByMonth ]);
-
-  const getIncomeTotal = () => {
-    let incomeTotal = 0;
-    incomeByMonth.forEach((income) => (incomeTotal += income.actual));
-    return incomeTotal;
+  const addExpenseCategoryHandler = () => {
+    dispatch(budgetCategoryActions.addExpenseCategory());
   };
+  
 
-  const getExpenseTotal = () => {
-    let expenseTotal = 0;
-    expensesByMonth.forEach((expense) => (expenseTotal += expense.actual));
-    return expenseTotal;
-  };
+  // const getIncomeTotal = () => {
+  //   let incomeTotal = 0;
+  //   incomeByMonth.forEach((income) => (incomeTotal += income.actual));
+  //   return incomeTotal;
+  // };
+
+  // const getExpenseTotal = () => {
+  //   let expenseTotal = 0;
+  //   expensesByMonth.forEach((expense) => (expenseTotal += expense.actual));
+  //   return expenseTotal;
+  // };
 
   const selectedYearHandler = (year) => {
     console.log(year.value);
@@ -98,7 +87,6 @@ const SetBudget = ({ expensesByMonth, incomeByMonth }) => {
         </Dropdown.Menu>
       </Dropdown>
       <Container>
-        <BudgetForm />
         <p>
           Your budget for: {selectedMonth} {selectedYear}
         </p>
@@ -109,7 +97,7 @@ const SetBudget = ({ expensesByMonth, incomeByMonth }) => {
         >
           <Tab eventKey="income" title="Income">
             <p>Income</p>
-            <p>Total: {getIncomeTotal()}$</p>
+            <p>Total: ''$</p>
             <Table striped bordered hover>
               <thead>
                 <tr>
@@ -119,15 +107,15 @@ const SetBudget = ({ expensesByMonth, incomeByMonth }) => {
                 </tr>
               </thead>
               <tbody>
-                {fetchedIncomeCategories.map((income) => (
+                {incomeEntries.map((income) => (
                   <tr>
                     <td>{income["category_name"]}</td>
                     <td>{income["amount_expected"]}</td>
-                    <td>N/A</td>
+                    <td>{income["amount_actual"]}</td>
                   </tr>
                 ))}
 
-                {isAddingBudgetCategory && (
+                {isAddingIncomeCategory && (
                   <tr>
                     <td>
                       <AddBudgetCategory />
@@ -139,7 +127,7 @@ const SetBudget = ({ expensesByMonth, incomeByMonth }) => {
 
                 <tr>
                   <td>
-                    <button onClick={addBudgetCategoryHandler}>
+                    <button onClick={addIncomeCategoryHandler}>
                       Select category
                     </button>
                   </td>
@@ -152,7 +140,7 @@ const SetBudget = ({ expensesByMonth, incomeByMonth }) => {
           </Tab>
           <Tab eventKey="expenses" title="Expenses">
             <p>Expenses</p>
-            <p>Total spent: {getExpenseTotal()}$</p>
+            <p>Total spent: '"$</p>
             <Table striped bordered hover>
               <thead>
                 <tr>
@@ -162,14 +150,14 @@ const SetBudget = ({ expensesByMonth, incomeByMonth }) => {
                 </tr>
               </thead>
               <tbody>
-                {fetchedExpensesCategories.map((expense) => (
+                {expensesEntries.map((expense) => (
                   <tr>
                     <td>{expense["category_name"]}</td>
                     <td>{expense["amount_expected"]}</td>
-                    <td>N/A</td>
+                    <td>{expense["amount_actual"]}</td>
                   </tr>
                 ))}
-                {isAddingBudgetCategory && (
+                {isAddingExpensesCategory && (
                   <tr>
                     <td>
                       <AddBudgetCategory />
@@ -180,8 +168,8 @@ const SetBudget = ({ expensesByMonth, incomeByMonth }) => {
                 )}
                 <tr>
                   <td>
-                    <button onClick={addBudgetCategoryHandler}>
-                      Select category
+                    <button onClick={addExpenseCategoryHandler}>
+                      Add a new expense category for this month's budget
                     </button>
                   </td>
 

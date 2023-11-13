@@ -1,29 +1,20 @@
 import { useState } from "react";
 import { Container, Col } from "react-bootstrap";
 import { Form as BForm } from "react-bootstrap";
-import { Form, useNavigate, useActionData, redirect } from "react-router-dom";
+import { Form, useActionData, redirect } from "react-router-dom";
 import classes from "./TrackingForm.module.css";
-import { collection, addDoc, doc, getDoc, updateDoc } from "firebase/firestore";
-import { db } from "../../config/firebase";
 import store from "../../store/index";
 
 import { useDispatch } from 'react-redux';
 import { modalActions } from '../../store/modal'
+import axios from 'axios';
 
-
-
-const transactionsCollectionRef = collection(db, "transactions");
 
 const TrackingForm = ({ method, expense }) => {
   const dispatch = useDispatch();
-
-
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedSubcategory, setSelectedSubcategory] = useState("");
-
   const data = useActionData();
-  const navigate = useNavigate();
-
   const categoryOptions = [
     {
       value: "Income",
@@ -79,9 +70,9 @@ const TrackingForm = ({ method, expense }) => {
         <Col>
           <BForm.Control
             placeholder="Transaction"
-            id="transaction"
+            id="description"
             type="text"
-            name="transaction"
+            name="description"
             required
           />
         </Col>
@@ -102,8 +93,8 @@ const TrackingForm = ({ method, expense }) => {
         </Col>
         <Col>
           <BForm.Select
-            id="subcategory"
-            name="subcategory"
+            id="category_name"
+            name="category_name"
             required
             onChange={(e) => setSelectedSubcategory(e.target.value)}
           >
@@ -121,7 +112,7 @@ const TrackingForm = ({ method, expense }) => {
           <BForm.Control
             placeholder="Amount"
             id="amount"
-            type="text"
+            type="number"
             name="amount"
             required
           />
@@ -142,47 +133,41 @@ export default TrackingForm;
 export async function action({ request, params }) {
   const method = request.method;
   const data = await request.formData();
-
-
+  const category_name =  data.get("category_name")
+  const description = data.get("description")
+  const amount = data.get("amount")
 
   if (method === "POST") {
-    const transactionData = {
-      // date: data.get('date').unix(),
-      transaction: data.get("transaction"),
-      category: data.get("category"),
-      subcategory: data.get("subcategory"),
-      amount: data.get("amount"),
-    };
-
     try {
-      await addDoc(transactionsCollectionRef, transactionData);
-    } catch (err) {
-      console.log(err);
+      const response = await axios.post('http://localhost:5000/api/addtransaction', {category_name, description, amount});
+      console.log('New category created:', response.data);
+    } catch (error) {
+      console.error('Error creating post:', error);
     }
   }
 
+
   if (method === "PUT") {
+    try {
     const state = store.getState();
     const selectedTransaction = state.transaction.selectedTransaction;
-    const transactionId = selectedTransaction.id.toString();
-    const docRef = doc(transactionsCollectionRef, transactionId);
-    const docSnap = await getDoc(docRef);
-    console.log(docSnap.data());
-
-    const updatedTransaction = {
-      transaction: data.get("transaction"),
-      category: data.get("category"),
-      subcategory: data.get("subcategory"),
+    console.log(selectedTransaction)
+    const id = selectedTransaction._id;
+    let updatedData = {
+      _id: id,
+      category_name: data.get("category_name"), 
+      description: data.get("description"),
       amount: data.get("amount"),
-    };
-    updateDoc(docRef, updatedTransaction)
-      .then(function () {
-        console.log("Document successfully updated.");
-      })
-      .catch(function (error) {
-        console.error("Error updating document:", error);
-      });
+      month: 1, 
+      year: 2023,
+      day: 3
+    }
+    await axios.put(`http://localhost:5000/api/updatetransaction/${id}`, updatedData);
+    console.log('Data updated successfully');
+  } catch (error) {
+    console.error('Error updating data:', error);
   }
+};
 
   return redirect("/tracker");
 }

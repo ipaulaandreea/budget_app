@@ -18,13 +18,12 @@ const TrackingSheet = ({ transactions }) => {
   const deleteHandler = async (id) => {
     await deleteTransaction(id);
     setTransactionsState(
-      transactionsState.filter((transaction) => transaction.id !== id)
+      transactionsState.filter((transaction) => transaction["_id"] !== id)
     );
   };
 
   const editHandler = (transaction) => {
     dispatch(transactionActions.selectTransaction(transaction));
-    // setShowEditModal(true);
     dispatch(modalActions.isEditting());
     dispatch(modalActions.displayModal());
   };
@@ -33,10 +32,6 @@ const TrackingSheet = ({ transactions }) => {
     dispatch(modalActions.isAdding());
   };
 
-  // const hideModal = () => {
-  //   // setShowEditModal(false)
-  //   dispatch(modalActions.hideModal())
-  // }
 
   return (
     <>
@@ -52,10 +47,8 @@ const TrackingSheet = ({ transactions }) => {
       <Table striped bordered hover>
         <thead>
           <tr>
-            {/* <th>Date</th> */}
             <th>Transaction</th>
             <th>Category</th>
-            <th>Subcategory</th>
             <th>Amount</th>
             <th>Actions</th>
           </tr>
@@ -63,16 +56,14 @@ const TrackingSheet = ({ transactions }) => {
         <tbody>
           {transactionsState.map((transaction) => (
             <tr>
-              {/* <td>{transaction.date.toDate().toLocaleString()}</td> */}
-              <td>{transaction.data.transaction}</td>
-              <td>{transaction.data.category}</td>
-              <td>{transaction.data.subcategory}</td>
-              <td>{transaction.data.amount}</td>
+              <td>{transaction.description}</td>
+              <td>{transaction.category_name}</td>
+              <td>{transaction.amount}</td>
               <td>
                 <button onClick={() => editHandler(transaction)}>Edit</button>
               </td>
               <td>
-                <button onClick={() => deleteHandler(transaction.id)}>
+                <button onClick={() => deleteHandler(transaction["_id"])}>
                   Delete
                 </button>
               </td>

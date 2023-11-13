@@ -1,9 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
 import modalReducer from './modal'
 import transactionReducer from './transaction'
-import budgetItemReducer from './budgetItems'
-import categoryReducer from './addcategoriestocategoriespage'
-import budgetCategoryReducer from './budgetcategories'
+import budgetItemReducer, {fetchBudgetEntries} from './budgetItems'
+import categoryReducer, {fetchCategories} from './addcategoriestocategoriespage'
+import budgetCategoryReducer, {fetchBudgetCategories} from './budgetcategories'
+
+
 const store = configureStore({
     reducer: { 
       modal: modalReducer, 
@@ -13,6 +15,14 @@ const store = configureStore({
       budgetCategory: budgetCategoryReducer
       
     },
+    middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false, 
+    }),
   });
+
+  store.dispatch(fetchCategories());
+  store.dispatch(fetchBudgetCategories());
+  store.dispatch(fetchBudgetEntries())
   
   export default store;

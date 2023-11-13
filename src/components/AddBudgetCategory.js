@@ -4,7 +4,7 @@ const AddBudgetCategory = () => {
 
   return (
     
-    <Row method = 'POST'  />
+    <Row method = 'POST' />
     
   )
 

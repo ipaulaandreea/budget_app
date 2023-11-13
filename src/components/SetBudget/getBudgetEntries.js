@@ -1,28 +1,24 @@
-import { collection, getDocs } from "firebase/firestore";
-import { db } from "../../config/firebase.js";
+import axios from "axios";
 
-const budgetRef = collection(db, "budgetUpdatedVersion");
+export default async function getBudgetEntries() {
+  let budgetIncomeCategories = [];
+  let budgetExpensesCategories = [];
 
-export default async function getFunc() {
-  let incomeCategories = [];
-  let expensesCategories = [];
   try {
-    let res = await getDocs(budgetRef);
-    if (res) {
-      res.forEach((item) => {
-        console.log(item.data());
-        if (item.data()["category_type"] === "income") {
-          incomeCategories.push(item.data());
+    const response = await axios.get("http://localhost:5000/api/budget");
+
+    if (response.data) {
+      response["data"].forEach((item) => {
+        if (item["type"] === "income") {
+          budgetIncomeCategories.push(item);
         } else {
-          expensesCategories.push(item.data());
+          budgetExpensesCategories.push(item);
         }
       });
     }
-    console.log(expensesCategories, incomeCategories)
-    return { expensesCategories, incomeCategories };
-
+    return { budgetExpensesCategories, budgetIncomeCategories };
   } catch (error) {
-    console.error("Error getting document:", error);
+    console.error("Error getting budget:", error);
+    throw error;
   }
-
 }

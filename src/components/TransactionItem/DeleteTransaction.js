@@ -1,19 +1,19 @@
-
-import { doc, deleteDoc } from 'firebase/firestore'
-import {db} from '../../config/firebase'
 import {redirect} from 'react-router-dom'
-
+import axios from 'axios'
  const deleteTransaction = async (id) => {
     console.log(id)
-    const transactionDoc = doc(db, 'transactions', id)
-    let message = window.confirm('Are you sure')
-    // window.alert("Are you sure");
+    let message = window.confirm('Are you sure?')
     if (message){
-        await deleteDoc (transactionDoc)
-        return redirect("/tracker");
- 
-    }
+        try {
+            await axios.delete(`http://localhost:5000/api/deletetransaction/${id}`);
+            console.log('Delete request sent successfully');
+        } catch (error) {
+            console.error('Error deleting transaction:', error);
+        }
 
+
+    }
+    return redirect("/tracker");
 
 
 }

@@ -1,10 +1,7 @@
 import { Container } from "react-bootstrap";
 import SetBudget from "../components/SetBudget/SetBudget";
-import { Form, useNavigate, useActionData, redirect } from "react-router-dom";
-import { collection, getDocs } from "firebase/firestore";
-import { db } from "../config/firebase";
 import { useLoaderData, Await, defer } from "react-router-dom";
-import getFunc from '../components/SetBudget/getBudgetEntries'
+import getBudgetEntries from '../components/SetBudget/getBudgetEntries'
 const BudgetSetterPage = () => {
   const { expensesByMonth, incomeByMonth } = useLoaderData();
   return (
@@ -25,6 +22,7 @@ const BudgetSetterPage = () => {
 export default BudgetSetterPage;
 
 export async function loader() {
-  let budget  = await getFunc();
+  let budget  = await getBudgetEntries();
+  console.log(budget)
   return defer({ expensesByMonth: budget.expensesCategories, incomeByMonth: budget.incomeCategories });
 }

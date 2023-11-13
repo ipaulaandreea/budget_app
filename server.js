@@ -1,0 +1,140 @@
+const express = require("express");
+const app = express();
+const cors = require("cors");
+const bodyParser = require('body-parser');
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.use(cors());
+app.use(bodyParser.json());
+app.use(express.json());
+
+const mongoose = require("mongoose");
+mongoose.connect("mongodb://127.0.0.1:27017/budget_app_db", {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+
+const Category = require("./models/Category");
+
+app.get("/api/getcategories", async (req, res) => {
+  console.log("GET categories!!!!!!");
+  try {
+    const categories = await Category.find();
+    res.json(categories);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Server Error");
+  }
+});
+
+const Transaction = require("./models/Transaction");
+app.get("/api/transactions", async (req, res) => {
+  console.log("GET transactions!!!!!!");
+  try {
+    const transactions = await Transaction.find();
+    res.json(transactions);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Server Error");
+  }
+});
+
+const BudgetEntry = require("./models/BudgetEntry");
+app.get("/api/budget", async (req, res) => {
+  console.log("GET budget entries!!!!!!");
+  try {
+    const budgetEntries = await BudgetEntry.find();
+    res.json(budgetEntries);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Server Error");
+  }
+});
+
+
+app.post('/api/addcategory', async (req, res) => {
+  try {
+    const { category_name, type } = req.body;
+    const newCategory = new Category({category_name, type });
+    await newCategory.save();
+    res.status(201).json(newCategory);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+app.post('/api/addtransaction', async (req, res) => {
+  try {
+    const { category_name, amount, description } = req.body;
+    const newTransaction = new Transaction({category_name, amount, description });
+    await newTransaction.save();
+    res.status(201).json(newTransaction);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+app.put('/api/updatetransaction/:id', async (req, res) => {
+  try {
+    const updatedData = req.body;
+    const id = req.params.id;
+    console.log('Received data:', updatedData, 'for ID:', id);
+
+    await Transaction.findByIdAndUpdate(id, updatedData, { new: true });
+    res.json({ success: true, message: 'Data updated successfully' });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Internal Server Error' });
+  }
+});
+
+app.delete('/api/deletetransaction/:id', async (req, res) => {
+  const transactionId = req.params.id;
+
+  try {
+    await Transaction.findByIdAndDelete(transactionId);
+    res.status(204).send();
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+app.post('/api/addbudgetentry', async (req, res) => {
+  try {
+    const { category_name, amount_expected, month, year, type, amount_actual  } = req.body;
+    const newBudgetEntry = new BudgetEntry({category_name, amount_expected, month, year, type, amount_actual });
+    await newBudgetEntry.save();
+    res.status(201).json(newBudgetEntry);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+
+app.post('/api/updateAmountActual', async (req, res) => {
+  try {
+    const { _id, category_name, month, year } = req.body;
+
+    // Find transactions for the specified category, month, and year
+    const transactions = await Transaction.find({ category_name, month, year });
+
+    // Calculate total amount from transactions
+    const totalAmount = transactions.reduce((sum, transaction) => sum + transaction.amount, 0);
+
+    // Update the budget entry with the calculated amount_actual
+    await BudgetEntry.findByIdAndUpdate(_id, { amount_actual: totalAmount });
+
+    // Respond with success message or the updated budget entry
+    res.json({ success: true, message: 'Amount_actual updated successfully' });
+  } catch (error) {
+    console.error('Error updating amount_actual:', error.message);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+});
