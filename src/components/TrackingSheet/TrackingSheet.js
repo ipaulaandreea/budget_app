@@ -3,6 +3,7 @@ import { Container, Table } from "react-bootstrap";
 import deleteTransaction from "../TransactionItem/DeleteTransaction";
 import EditModal from "../UI/EditModal/EditModal";
 import { transactionActions } from "../../store/transaction";
+import {budgetItemActions} from '../../store/budgetItems'
 
 import { useSelector, useDispatch } from "react-redux";
 import { modalActions } from "../../store/modal";
@@ -16,11 +17,18 @@ const TrackingSheet = ({ transactions }) => {
   }, [transactions]);
 
   const deleteHandler = async (id) => {
+    const selectedTransaction = transactionsState.filter((transaction) => transaction["_id"] === id)
+    let message = window.confirm('Are you sure?')
+    if (message){
+    dispatch(budgetItemActions.deleteTransaction(selectedTransaction))
     await deleteTransaction(id);
+
     setTransactionsState(
       transactionsState.filter((transaction) => transaction["_id"] !== id)
     );
+    
   };
+}
 
   const editHandler = (transaction) => {
     dispatch(transactionActions.selectTransaction(transaction));

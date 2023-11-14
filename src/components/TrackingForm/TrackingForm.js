@@ -136,10 +136,13 @@ export async function action({ request, params }) {
   const category_name =  data.get("category_name")
   const description = data.get("description")
   const amount = data.get("amount")
+  const month = 1
+  const year =  2023
+  const day = 3
 
   if (method === "POST") {
     try {
-      const response = await axios.post('http://localhost:5000/api/addtransaction', {category_name, description, amount});
+      const response = await axios.post('http://localhost:5000/api/addtransaction', {category_name, description, amount, month, year, day});
       console.log('New category created:', response.data);
     } catch (error) {
       console.error('Error creating post:', error);

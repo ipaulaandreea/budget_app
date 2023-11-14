@@ -4,14 +4,9 @@ import { useSelector } from "react-redux";
 import axios from 'axios';
 import getCategories from '../../../components/SetBudget/getCategories'
 
-
-
 const Row = ({ method }) => {
-
-
   const fetchedIncomeCategories = useSelector((state) => state.category.incomeCategories);
   const fetchedExpensesCategories = useSelector((state) => state.category.expensesCategories);
-  console.log(fetchedExpensesCategories, fetchedIncomeCategories)
 
   const isAddingIncomeCategory = useSelector(
     (state) => state.budgetCategory.isAddingIncomeCategory
@@ -19,7 +14,6 @@ const Row = ({ method }) => {
   const isAddingExpensesCategory = useSelector(
     (state) => state.budgetCategory.isAddingExpensesCategory
   );
-
 
   return (
     <Form method={method}>
@@ -51,65 +45,22 @@ const Row = ({ method }) => {
 
 export default Row;
 
-// export async function action({ request, params, categoryData }) {
-//   const method = request.method;
-//   let categories = await getBudgetEntries();
-//   let availableIncomeCategories = categories.incomeCategories;
-//   let availableExpensesCategories = categories.expensesCategories;
-
-//   if (method === "POST") {
-//     const data = await request.formData();
-//     var selectBox = document.getElementById("category");
-//     var selectedValue = selectBox.value;
-//     let foundIncomeCategory = availableIncomeCategories.find(
-//       (category) => category.category_name === selectedValue
-//     );
-//     let foundExpenseCategory = availableExpensesCategories.find(
-//       (category) => category.category_name === selectedValue
-//     );
-//     if (foundIncomeCategory) {
-//       const categoryData = {
-//         category_name: selectedValue,
-//         amount_expected: data.get("amount_expected"),
-//         category_type: "income",
-//         month: 1,
-//         year: 2023,
-//       };
-
-
-      
-//       try {
-//         await addDoc(budgetRef, categoryData);
-//       } catch (err) {
-//         console.log(err);
-//       }
-//     }
-//     if (foundExpenseCategory) {
-//       const categoryData = {
-//         category_name: selectedValue,
-//         amount_expected: data.get("amount_expected"),
-//         category_type: "expense",
-//         month: 1,
-//         year: 2023,
-//       };
-
-//       try {
-//         await addDoc(budgetRef, categoryData);
-//       } catch (err) {
-//         console.log(err);
-//       }
-//     }
-//   }
-
-//   return redirect("/set-budget");
-// }
-
 export async function action({ request, params }) {
   const method = request.method;
-  let {expensesCategories, incomeCategories} = await getCategories();
+  
+  let categories = await getCategories();
+  //aici trebuie sa chem functia de updateamount din server.js;
+   var selectBox = document.getElementById("category");
+   var selectedValue = selectBox.value;
+    // let foundIncomeCategory = categories['incomeCategories'].find(
+    //   (category) => category.category_name === selectedValue
+    // );
+    // let foundExpenseCategory = categories['expensesCategories'].find(
+    //   (category) => category.category_name === selectedValue
+    // );
   const data = await request.formData();
   const categoryData = {
-    category_name: data.get("category_name"),
+    category_name: selectedValue,
     amount_expected: data.get("amount_expected"),
     type: "income",
     month: 1,
@@ -119,15 +70,6 @@ export async function action({ request, params }) {
 
   if (method === "POST") {
     try {
-    //   var selectBox = document.getElementById("category_name");
-    // var selectedValue = selectBox.value;
-    // let foundIncomeCategory = availableIncomeCategories.find(
-    //   (category) => category.category_name === selectedValue
-    // );
-    // let foundExpenseCategory = availableExpensesCategories.find(
-    //   (category) => category.category_name === selectedValue
-    // );
-    // if (foundIncomeCategory) {
 
       const response = await axios.post('http://localhost:5000/api/addbudgetentry', {categoryData});
       console.log('New category created:', response.data);

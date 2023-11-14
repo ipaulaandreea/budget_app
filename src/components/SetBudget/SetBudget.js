@@ -11,7 +11,6 @@ import { budgetCategoryActions } from "../../store/budgetcategories";
 const SetBudget = ({ expensesByMonth, incomeByMonth }) => {
   const [selectedYear, setSelectedYear] = useState(null);
   const [selectedMonth, setSelectedMonth] = useState(null);
-
   const incomeEntries = useSelector((state) => state.budgetItem.incomeBudgetEntries);
   const expensesEntries = useSelector((state) => state.budgetItem.expensesBudgetEntries);
 
@@ -25,6 +24,7 @@ const SetBudget = ({ expensesByMonth, incomeByMonth }) => {
   const isAddingExpensesCategory = useSelector(
     (state) => state.budgetCategory.isAddingExpensesCategory
   );
+
 
   const addIncomeCategoryHandler = () => {
     dispatch(budgetCategoryActions.addIncomeCategory());
