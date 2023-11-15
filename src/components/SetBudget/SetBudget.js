@@ -1,13 +1,10 @@
 import { Container, Table, Tab, Tabs, Dropdown } from "react-bootstrap";
 import { months, years } from "./DateOptions";
-import { useState } from "react";
-
-
-
+import { useState, useEffect } from "react";
 import AddBudgetCategory from "../AddBudgetCategory";
-
 import { useSelector, useDispatch } from "react-redux";
 import { budgetCategoryActions } from "../../store/budgetcategories";
+import {fetchBudgetEntries} from '../../store/budgetItems'
 
 const SetBudget = ({ expensesByMonth, incomeByMonth }) => {
   const [selectedYear, setSelectedYear] = useState(null);
@@ -15,10 +12,13 @@ const SetBudget = ({ expensesByMonth, incomeByMonth }) => {
   const incomeEntries = useSelector((state) => state.budgetItem.incomeBudgetEntries);
   const expensesEntries = useSelector((state) => state.budgetItem.expensesBudgetEntries);
 
+  const dispatch = useDispatch();
+ 
+  
+
   // console.log({ expensesByMonth, incomeByMonth });
 
-  const dispatch = useDispatch();
-
+  
   const isAddingIncomeCategory = useSelector(
     (state) => state.budgetCategory.isAddingIncomeCategory
   );
@@ -27,14 +27,19 @@ const SetBudget = ({ expensesByMonth, incomeByMonth }) => {
   );
 
 
-  const addIncomeCategoryHandler = () => {
+  const addIncomeCategoryHandler = async  () => {
     dispatch(budgetCategoryActions.addIncomeCategory());
+    dispatch(fetchBudgetEntries());
   };
 
-  const addExpenseCategoryHandler = () => {
+  const addExpenseCategoryHandler = async  () => {
     dispatch(budgetCategoryActions.addExpenseCategory());
+    dispatch(fetchBudgetEntries());
   };
   
+  useEffect(() => {
+    dispatch(fetchBudgetEntries());
+  }, [dispatch, incomeEntries, expensesEntries]);
 
   // const getIncomeTotal = () => {
   //   let incomeTotal = 0;

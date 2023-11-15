@@ -1,10 +1,8 @@
 import { Form } from "react-router-dom";
-import { collection, getDocs } from "firebase/firestore";
-import { db } from "../../config/firebase";
 import { useSelector, useDispatch } from "react-redux";
 import { categoryActions } from "../../store/addcategoriestocategoriespage";
 import { Table } from "react-bootstrap";
-const categoriesRef = collection(db, "categoriesUpdated");
+
 
 
 const AddCategories = (categories) => {
@@ -73,18 +71,3 @@ const AddCategories = (categories) => {
 
 export default AddCategories;
 
-export async function getCategories() {
-  let categories = [];
-  try {
-    const res = await getDocs(categoriesRef);
-    if (res) {
-      res.forEach((item) => {
-        console.log(item.data());
-        categories.push(item.data());
-      });
-    }
-    return categories;
-  } catch (error) {
-    console.error("Error getting document:", error);
-  }
-}

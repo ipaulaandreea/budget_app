@@ -15,10 +15,10 @@ const fetchBudgetEntries = createAsyncThunk(
   }
 );
 
-const updateBudgetEntries = (updatedCategories) => ({
-  type: "budgetItem/updateBudgetEntries",
-  payload: updatedCategories,
-}); //wip
+// const updateBudgetEntries = (updatedCategories) => ({
+//   type: "budgetItem/updateBudgetEntries",
+//   payload: updatedCategories,
+// }); 
 
 const budgetItemSlice = createSlice({
   name: "budgetItem",
@@ -41,9 +41,11 @@ const budgetItemSlice = createSlice({
      
     // },
 
-    deleteTransaction(state, action) {
-      console.log("im in redux");
+    // updateBudgetEntries(state, action) {
+    //   const updatedCategories = action.payload;
+    // },
 
+    deleteTransaction(state, action) {
       console.log(current(state))
 
       const transaction = action.payload;
