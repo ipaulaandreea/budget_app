@@ -3,6 +3,7 @@ import { months, years } from "./DateOptions";
 import { useState } from "react";
 
 
+
 import AddBudgetCategory from "../AddBudgetCategory";
 
 import { useSelector, useDispatch } from "react-redux";
@@ -169,7 +170,7 @@ const SetBudget = ({ expensesByMonth, incomeByMonth }) => {
                 <tr>
                   <td>
                     <button onClick={addExpenseCategoryHandler}>
-                      Add a new expense category for this month's budget
+                      Add a new expense category
                     </button>
                   </td>
 

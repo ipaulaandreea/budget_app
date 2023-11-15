@@ -39,6 +39,7 @@ const Row = ({ method }) => {
       />
 
       <button type="submit">Save</button>
+      <button>Cancel</button>
     </Form>
   );
 };
@@ -47,26 +48,29 @@ export default Row;
 
 export async function action({ request, params }) {
   const method = request.method;
-  
   let categories = await getCategories();
-  //aici trebuie sa chem functia de updateamount din server.js;
+  const mergedCategories = [
+    ...categories.incomeCategories,
+    ...categories.expensesCategories,
+  ];
    var selectBox = document.getElementById("category");
    var selectedValue = selectBox.value;
-    // let foundIncomeCategory = categories['incomeCategories'].find(
-    //   (category) => category.category_name === selectedValue
-    // );
-    // let foundExpenseCategory = categories['expensesCategories'].find(
-    //   (category) => category.category_name === selectedValue
-    // );
+    let foundCategory = mergedCategories.filter(
+      (category) => category['category_name'] === selectedValue
+    );
+
   const data = await request.formData();
+
+
   const categoryData = {
     category_name: selectedValue,
     amount_expected: data.get("amount_expected"),
-    type: "income",
+    type: foundCategory[0]['type'] ,
     month: 1,
     year: 2023,
     amount_actual: 0,
   };
+
 
   if (method === "POST") {
     try {

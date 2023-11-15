@@ -15,14 +15,32 @@ const fetchBudgetEntries = createAsyncThunk(
   }
 );
 
+const updateBudgetEntries = (updatedCategories) => ({
+  type: "budgetItem/updateBudgetEntries",
+  payload: updatedCategories,
+}); //wip
+
 const budgetItemSlice = createSlice({
   name: "budgetItem",
   initialState: {
     selectedBudgetItem: null,
     incomeBudgetEntries: [],
     expensesBudgetEntries: [],
+    // isAddingIncomeEntry: false,
+    // isAddingExpenseEntry: false
   },
   reducers: {
+
+    // addIncomeEntry(state, action) {
+    //   state.isAddingIncomeEntry = true;
+     
+    // },
+
+    // addExpenseEntry(state, action) {
+    //   state.isAddingExpenseEntry = true;
+     
+    // },
+
     deleteTransaction(state, action) {
       console.log("im in redux");
 
