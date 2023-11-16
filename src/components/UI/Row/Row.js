@@ -7,8 +7,6 @@ import getCategories from '../../../components/SetBudget/getCategories'
 const Row = ({ method }) => {
   
 
-
-
   const fetchedIncomeCategories = useSelector((state) => state.category.incomeCategories);
   const fetchedExpensesCategories = useSelector((state) => state.category.expensesCategories);
 

@@ -39,7 +39,7 @@ const SetBudget = ({ expensesByMonth, incomeByMonth }) => {
   
   useEffect(() => {
     dispatch(fetchBudgetEntries());
-  }, [dispatch, incomeEntries, expensesEntries]);
+  }, [dispatch]);
 
   // const getIncomeTotal = () => {
   //   let incomeTotal = 0;

@@ -29,6 +29,5 @@ async function getTransactions() {
 
 export async function loader() {
   let transactions = await getTransactions();
-  console.log(transactions);
   return defer({ transactions });
 }

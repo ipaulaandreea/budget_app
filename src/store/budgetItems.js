@@ -1,6 +1,5 @@
-import { createSlice, createAsyncThunk, current } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, createAction, createReducer , current } from "@reduxjs/toolkit";
 import getBudgetEntries from "../components/SetBudget/getBudgetEntries";
-
 const fetchBudgetEntries = createAsyncThunk(
   "budgetItem/fetchBudgetEntries",
   async () => {
@@ -15,10 +14,29 @@ const fetchBudgetEntries = createAsyncThunk(
   }
 );
 
-// const updateBudgetEntries = (updatedCategories) => ({
-//   type: "budgetItem/updateBudgetEntries",
-//   payload: updatedCategories,
-// }); 
+
+// const increment = createAction('increment')
+// const decrement = createAction('decrement')
+
+// const amountReducer = createReducer(
+//   {
+//     counter: 0,
+//     sumOfAmountPayloads: 0,
+//     unhandledActions: 0,
+//   },
+//   (builder) => {
+//     builder
+//       .addCase(increment, (state, action) => {
+//         // action is inferred correctly here
+//         state.counter += action.payload
+//       })
+//       // You can chain calls, or have separate `builder.addCase()` lines each time
+//       .addCase(decrement, (state, action) => {
+//         state.counter -= action.payload
+//       })
+//       .addDefaultCase((state, action) => {})
+//   }
+// )
 
 const budgetItemSlice = createSlice({
   name: "budgetItem",
@@ -26,41 +44,49 @@ const budgetItemSlice = createSlice({
     selectedBudgetItem: null,
     incomeBudgetEntries: [],
     expensesBudgetEntries: [],
-    // isAddingIncomeEntry: false,
-    // isAddingExpenseEntry: false
+
   },
+
+
   reducers: {
 
-    // addIncomeEntry(state, action) {
-    //   state.isAddingIncomeEntry = true;
-     
-    // },
+    // addTransaction(state, action) {
+    //   const transaction = action.payload;
 
-    // addExpenseEntry(state, action) {
-    //   state.isAddingExpenseEntry = true;
-     
-    // },
+    //   if (transaction.type === "income") {
+    //     const index = state.incomeBudgetEntries.findIndex(
+    //       (entry) => entry.category_name === transaction.category_name
+    //     );
 
-    // updateBudgetEntries(state, action) {
-    //   const updatedCategories = action.payload;
+    //     if (index !== -1) {
+    //       state.incomeBudgetEntries[index].amount_actual +=
+    //         transaction.amount;
+    //     }
+    //   } else {
+    //     const index = state.expensesBudgetEntries.findIndex(
+    //       (entry) => entry.category_name === transaction.category_name
+    //     );
+
+    //     if (index !== -1) {
+    //       state.expensesBudgetEntries[index].amount_actual +=
+    //         transaction.amount;
+    //     }
+    //   }
     // },
 
     deleteTransaction(state, action) {
-      console.log(current(state))
-
       const transaction = action.payload;
+      const index = state.expensesBudgetEntries.findIndex(
+        (entry) => entry.category_name === transaction.category_name
+      );
 
-      state.expensesBudgetEntries = state.expensesBudgetEntries.map((entry) => {
-        if (entry.category_name === transaction.category_name) {
-          return {
-            ...entry,
-            amount_actual: entry.amount_actual - transaction.amount,
-          };
-        }
-        return entry;
-      });
-      console.log(current(state))
+      if (index !== -1) {
+        state.expensesBudgetEntries[index].amount_actual -=
+          transaction.amount;
+      }
     },
+
+
 
     selectBudgetItem(state, action) {
       state.selectedBudgetItem = action.payload;
@@ -71,11 +97,12 @@ const budgetItemSlice = createSlice({
     },
   },
 
+
   extraReducers: (builder) => {
     builder.addCase(fetchBudgetEntries.fulfilled, (state, action) => {
       state.incomeBudgetEntries = action.payload.budgetIncomeCategories;
       state.expensesBudgetEntries = action.payload.budgetExpensesCategories;
-    });
+    })
   },
 });
 

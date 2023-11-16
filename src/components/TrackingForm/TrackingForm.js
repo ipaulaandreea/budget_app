@@ -1,33 +1,39 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Container, Col } from "react-bootstrap";
 import { Form as BForm } from "react-bootstrap";
 import { Form, useActionData, redirect } from "react-router-dom";
 import classes from "./TrackingForm.module.css";
 import store from "../../store/index";
-
 import { useDispatch } from 'react-redux';
 import { modalActions } from '../../store/modal'
 import axios from 'axios';
+import {budgetItemActions} from '../../store/budgetItems';
+import {fetchBudgetEntries} from '../../store/budgetItems'
+import {updateActualAmount} from './updateActualAmount'
+
+
 
 
 const TrackingForm = ({ method, expense }) => {
   const dispatch = useDispatch();
+  const formRef = useRef(null);
+
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedSubcategory, setSelectedSubcategory] = useState("");
   const data = useActionData();
   const categoryOptions = [
     {
-      value: "Income",
-      label: "Income",
+      value: "income",
+      label: "income",
     },
     {
-      value: "Expense",
-      label: "Expense",
+      value: "expense",
+      label: "expense",
     },
   ];
 
   const subcategoryOptions = {
-    Income: [
+    income: [
       { value: "salary", label: "salary" },
       { value: "side hustle", label: "side hustle" },
       { value: "bonus", label: "bonus" },
@@ -35,7 +41,7 @@ const TrackingForm = ({ method, expense }) => {
       { value: "dividens", label: "dividends" },
       { value: "other", label: "other" },
     ],
-    Expense: [
+    expense: [
       { value: "rent", label: "rent" },
       { value: "mortage", label: "mortage" },
       { value: "loans", label: "loans" },
@@ -56,9 +62,36 @@ const TrackingForm = ({ method, expense }) => {
      dispatch(modalActions.hideModal());
   };
 
+  const addTransactionHandler = async (event) => {
+    try {
+      // Access form data using useRef
+      const formData = new FormData(formRef.current);
+
+      // Extract data from the FormData object
+      const transactionData = {
+        description: formData.get("description"),
+        type: formData.get("type"),
+        category_name: formData.get("category_name"),
+        amount: formData.get("amount"),
+        month: 1,
+        year: 2023,
+        day: 3,
+      };
+
+    
+      dispatch(budgetItemActions.addTransaction(transactionData));
+      // dispatch(budgetItemActions.updateAmount({ id: yourEntryId, amount: newAmount }));
+      //wip - create a new updateAmount reducer in redux
+      dispatch(fetchBudgetEntries());
+      dispatch(modalActions.hideModal());
+    } catch (error) {
+      console.error("Error adding transaction:", error);
+    }
+  };
+
   return (
     <Container>
-      <Form method={method}>
+      <Form method={method} ref={formRef}>
         {data && data.errors && (
           <ul>
             {Object.values(data.errors).map((err) => (
@@ -78,8 +111,8 @@ const TrackingForm = ({ method, expense }) => {
         </Col>
         <Col>
           <BForm.Select
-            id="category"
-            name="category"
+            id="type"
+            name="type"
             required
             onChange={(e) => setSelectedCategory(e.target.value)}
           >
@@ -121,7 +154,7 @@ const TrackingForm = ({ method, expense }) => {
           <button type="button" onClick={cancelHandler}>
             Cancel
           </button>
-          <button>Save</button>
+          <button onClick={addTransactionHandler}>Save</button>
         </div>
       </Form>
     </Container>
@@ -133,7 +166,17 @@ export default TrackingForm;
 export async function action({ request, params }) {
   const method = request.method;
   const data = await request.formData();
+  let transactionData = {
+     category_name :  data.get("category_name"),
+     type : data.get('type'),
+     description : data.get("description"),
+     amount : data.get("amount"),
+     month : 1,
+     year :  2023,
+     day : 3 ,
+  }
   const category_name =  data.get("category_name")
+  const type = data.get('type');
   const description = data.get("description")
   const amount = data.get("amount")
   const month = 1
@@ -142,11 +185,14 @@ export async function action({ request, params }) {
 
   if (method === "POST") {
     try {
-      const response = await axios.post('http://localhost:5000/api/addtransaction', {category_name, description, amount, month, year, day});
+      const response = await axios.post('http://localhost:5000/api/addtransaction', {category_name, type, description, amount, month, year, day});
       console.log('New category created:', response.data);
+      await updateActualAmount(transactionData)
     } catch (error) {
       console.error('Error creating post:', error);
     }
+    
+    
   }
 
 

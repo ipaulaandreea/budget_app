@@ -3,8 +3,6 @@ import { useSelector, useDispatch } from "react-redux";
 import { categoryActions } from "../../store/addcategoriestocategoriespage";
 import { Table } from "react-bootstrap";
 
-
-
 const AddCategories = (categories) => {
   const dispatch = useDispatch();
   const isAddingCategory = useSelector(
