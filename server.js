@@ -66,7 +66,7 @@ app.post("/api/addcategory", async (req, res) => {
 
 app.post("/api/addtransaction", async (req, res) => {
   try {
-    const { category_name, type, amount, description, month, day, year } = req.body;
+    const { category_name, type, amount, description, month, day, year, amountDifference } = req.body;
     const newTransaction = new Transaction({
       category_name,
       type,
@@ -77,7 +77,7 @@ app.post("/api/addtransaction", async (req, res) => {
       year
     });
     await newTransaction.save();
-    // await updateBudgetAmount(category_name, amount, month, year)
+    await updateBudgetAmount(category_name, amount, month, year, amountDifference)
 
     res.status(201).json(newTransaction);
     
@@ -88,11 +88,10 @@ app.post("/api/addtransaction", async (req, res) => {
 });
 
 app.put('/api/update-budget-amount', async (req, res) => {
-  debugger;
-  const { category_name, amount, month, year } = req.body;
+  const { category_name, amount, month, year, amountDifference } = req.body;
   console.log('im in server.js')
   try {
-    await updateBudgetAmount(category_name, amount, month, year);
+    await updateBudgetAmount(category_name, amount, month, year, amountDifference);
     res.status(200).json({ message: 'Amount updated successfully' });
   } catch (error) {
     console.error(error);
@@ -101,7 +100,7 @@ app.put('/api/update-budget-amount', async (req, res) => {
 });
 
 
-async function updateBudgetAmount(category_name, amount, month, year) {
+async function updateBudgetAmount(category_name, amount, month, year, amountDifference) {
   try {
     const budgetCategory = await BudgetEntry.findOne({ category_name, month, year });
 
@@ -109,16 +108,22 @@ async function updateBudgetAmount(category_name, amount, month, year) {
       console.error("Budget category not found");
       return;
     }
-    budgetCategory.amount_actual = parseFloat(budgetCategory.amount_actual);
-    amount = parseFloat(amount);
+    let formerAmount = parseFloat(budgetCategory.amount_actual)
+    // budgetCategory.amount_actual = parseFloat(budgetCategory.amount_actual);
+    console.log("formerAmount:", formerAmount);
+    console.log("amountDifference:", amountDifference);
+    
+    let updatedAmount = parseFloat(formerAmount) + parseFloat(amountDifference);
+    console.log("updatedAmount:", updatedAmount);
 
-    budgetCategory.amount_actual += amount;
+
+    // budgetCategory.amount_actual += amount;
 
     console.log("Before update - Budget Category:", budgetCategory);
 
     await BudgetEntry.findOneAndUpdate(
       { category_name, month, year },
-      { amount_actual: budgetCategory.amount_actual }
+      { amount_actual: updatedAmount }
     );
     console.log("After update - Budget Category:", await BudgetEntry.findOne({ category_name, month, year }));
 
@@ -133,6 +138,7 @@ app.put("/api/updatetransaction/:id", async (req, res) => {
   try {
     const updatedData = req.body;
     const id = req.params.id;
+    console.log("updatetransaction call");
     console.log("Received data:", updatedData, "for ID:", id);
     
 

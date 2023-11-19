@@ -166,6 +166,7 @@ export default TrackingForm;
 export async function action({ request, params }) {
   const method = request.method;
   const data = await request.formData();
+  let amountDifference = 0; 
   let transactionData = {
      category_name :  data.get("category_name"),
      type : data.get('type'),
@@ -182,12 +183,13 @@ export async function action({ request, params }) {
   const month = 1
   const year =  2023
   const day = 3
+  amountDifference = amount;
 
   if (method === "POST") {
     try {
       const response = await axios.post('http://localhost:5000/api/addtransaction', {category_name, type, description, amount, month, year, day});
       console.log('New category created:', response.data);
-      await updateActualAmount(transactionData)
+      await updateActualAmount(transactionData, amountDifference)
     } catch (error) {
       console.error('Error creating post:', error);
     }
@@ -202,6 +204,10 @@ export async function action({ request, params }) {
     const selectedTransaction = state.transaction.selectedTransaction;
     console.log(selectedTransaction)
     const id = selectedTransaction._id;
+    const prevAmount = parseFloat(selectedTransaction.amount); 
+    if (prevAmount !== parseFloat(data.get("amount"))){
+      amountDifference = parseFloat(data.get("amount")) - prevAmount;
+    } 
     let updatedData = {
       _id: id,
       category_name: data.get("category_name"), 
@@ -213,6 +219,8 @@ export async function action({ request, params }) {
     }
     await axios.put(`http://localhost:5000/api/updatetransaction/${id}`, updatedData);
     console.log('Data updated successfully');
+    console.log('amount!!!!!!', amountDifference);
+    await updateActualAmount(updatedData, amountDifference)
   } catch (error) {
     console.error('Error updating data:', error);
   }
