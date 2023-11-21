@@ -39,6 +39,12 @@ const budgetCategorySlice = createSlice({
        
       },
 
+      cancelAdding(state, action) {
+        state.isAddingExpensesCategory = false;
+        state.isAddingIncomeCategory = false;
+
+      }
+
     },
     extraReducers: (builder) => {
       builder.addCase(fetchBudgetCategories.fulfilled, (state, action) => {

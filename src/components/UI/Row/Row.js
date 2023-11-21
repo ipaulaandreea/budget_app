@@ -1,12 +1,12 @@
 import { Form, redirect } from "react-router-dom";
 import { Form as RForm } from "react-bootstrap";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import axios from 'axios';
 import getCategories from '../../../components/SetBudget/getCategories'
-
+import { budgetCategoryActions } from '../../../store/budgetcategories'
 const Row = ({ method }) => {
   
-
+  const dispatch = useDispatch();
   const fetchedIncomeCategories = useSelector((state) => state.category.incomeCategories);
   const fetchedExpensesCategories = useSelector((state) => state.category.expensesCategories);
 
@@ -16,6 +16,10 @@ const Row = ({ method }) => {
   const isAddingExpensesCategory = useSelector(
     (state) => state.budgetCategory.isAddingExpensesCategory
   );
+
+  const hideRowHandler = () => {
+    dispatch(budgetCategoryActions.cancelAdding());
+  }
 
   return (
     <Form method={method}>
@@ -41,7 +45,7 @@ const Row = ({ method }) => {
       />
 
       <button type="submit">Save</button>
-      <button>Cancel</button>
+      <button onClick = {hideRowHandler}>Cancel</button>
     </Form>
   );
 };

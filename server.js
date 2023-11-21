@@ -211,3 +211,14 @@ async function deleteBudgetAmount(category_name, month, year, amount) {
     console.error(error);
   }
 }
+
+app.delete("/api/deletecategory/:id", async (req, res) => {
+  const categoryId = req.params.id;
+  try {
+    await Category.findByIdAndDelete(categoryId);
+    res.status(204).send();
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+});

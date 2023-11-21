@@ -13,5 +13,5 @@ export async function action({ request, params }) {
         console.error('Error creating post:', error);
       }
     }
-    return null;
+    return {category_name, type};
 }

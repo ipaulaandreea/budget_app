@@ -28,6 +28,10 @@ const categorySlice = createSlice({
       state.isAddingCategory = true;
      
     },
+    cancelAdding(state, action) {
+      state.isAddingCategory = false;
+
+    }
 
   },
   extraReducers: (builder) => {
