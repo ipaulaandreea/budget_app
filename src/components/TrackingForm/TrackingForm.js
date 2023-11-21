@@ -4,7 +4,7 @@ import { Form as BForm } from "react-bootstrap";
 import { Form, useActionData, redirect } from "react-router-dom";
 import classes from "./TrackingForm.module.css";
 import store from "../../store/index";
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { modalActions } from '../../store/modal'
 import axios from 'axios';
 import {budgetItemActions} from '../../store/budgetItems';
@@ -17,10 +17,12 @@ import {updateActualAmount} from './updateActualAmount'
 const TrackingForm = ({ method, expense }) => {
   const dispatch = useDispatch();
   const formRef = useRef(null);
-
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedSubcategory, setSelectedSubcategory] = useState("");
   const data = useActionData();
+  const selectedMonth = useSelector((state) => state.transaction.selectedMonth); 
+  const selectedYear = useSelector((state) => state.transaction.selectedYear);   
+
   const categoryOptions = [
     {
       value: "income",
@@ -64,24 +66,27 @@ const TrackingForm = ({ method, expense }) => {
 
   const addTransactionHandler = async (event) => {
     try {
-      // Access form data using useRef
       const formData = new FormData(formRef.current);
-
-      // Extract data from the FormData object
       const transactionData = {
         description: formData.get("description"),
         type: formData.get("type"),
         category_name: formData.get("category_name"),
         amount: formData.get("amount"),
-        month: 1,
-        year: 2023,
-        day: 3,
+        month: selectedMonth,
+        year: selectedYear,
       };
 
-    
+      // const handleAddTransaction = (newTransaction) => {
+      //   // Update transactionsState only if the new transaction matches the selected month and year
+      //   if (
+      //     newTransaction.year === selectedYear &&
+      //     newTransaction.month === selectedMonth
+      //   ) {
+      //     setTransactionsState((prevTransactions) => [...prevTransactions, newTransaction]);
+      //   }
+      // }; - de corelat cu trackingSheet, poate facut un redux slice cu filtered transactions;
       dispatch(budgetItemActions.addTransaction(transactionData));
       // dispatch(budgetItemActions.updateAmount({ id: yourEntryId, amount: newAmount }));
-      //wip - create a new updateAmount reducer in redux
       dispatch(fetchBudgetEntries());
       dispatch(modalActions.hideModal());
     } catch (error) {
@@ -90,6 +95,7 @@ const TrackingForm = ({ method, expense }) => {
   };
 
   return (
+   
     <Container>
       <Form method={method} ref={formRef}>
         {data && data.errors && (
@@ -149,6 +155,20 @@ const TrackingForm = ({ method, expense }) => {
             name="amount"
             required
           />
+            <BForm.Control
+            value={selectedYear}
+            id="year"
+            type="text"
+            name="year"
+            required
+          />
+            <BForm.Control
+            value={selectedMonth}
+            id="month"
+            type="text"
+            name="month"
+            required
+          />
         </Col>
         <div className={classes.actions}>
           <button type="button" onClick={cancelHandler}>
@@ -158,6 +178,7 @@ const TrackingForm = ({ method, expense }) => {
         </div>
       </Form>
     </Container>
+  
   );
 };
 
@@ -172,24 +193,24 @@ export async function action({ request, params }) {
      type : data.get('type'),
      description : data.get("description"),
      amount : data.get("amount"),
-     month : 1,
-     year :  2023,
-     day : 3 ,
+     month : data.get('month'),
+     year :  data.get('year'),
   }
   const category_name =  data.get("category_name")
   const type = data.get('type');
   const description = data.get("description")
   const amount = data.get("amount")
-  const month = 1
-  const year =  2023
-  const day = 3
+  const month = data.get("month")
+  const year =  data.get("year")
   amountDifference = amount;
 
   if (method === "POST") {
     try {
-      const response = await axios.post('http://localhost:5000/api/addtransaction', {category_name, type, description, amount, month, year, day});
+      const response = await axios.post('http://localhost:5000/api/addtransaction', {category_name, type, description, amount, month, year});
       console.log('New category created:', response.data);
       await updateActualAmount(transactionData, amountDifference)
+      const addedTransaction=response.data;
+      handleAddTransaction(addedTransaction);
     } catch (error) {
       console.error('Error creating post:', error);
     }
@@ -213,9 +234,8 @@ export async function action({ request, params }) {
       category_name: data.get("category_name"), 
       description: data.get("description"),
       amount: data.get("amount"),
-      month: 1, 
-      year: 2023,
-      day: 3
+      month: data.get('month'), 
+      year: data.get('year')
     }
     await axios.put(`http://localhost:5000/api/updatetransaction/${id}`, updatedData);
     console.log('Data updated successfully');

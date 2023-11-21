@@ -3,9 +3,8 @@ const mongoose = require("mongoose");
 const transactionSchema = new mongoose.Schema({
   amount: Number,
   category_name: String,
-  day: Number,
-  month: Number,
-  year: Number,
+  month: String,
+  year: String,
   description: String,
   type: String
 });

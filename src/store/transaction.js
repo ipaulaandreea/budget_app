@@ -4,6 +4,8 @@ const transactionSlice = createSlice({
     name: "transaction",
     initialState: {
       selectedTransaction: null,
+      selectedMonth: null,
+      selectedYear: null,
     },
     reducers: {
       
@@ -18,6 +20,14 @@ const transactionSlice = createSlice({
         state.selectedTransaction = null;
        
       },
+
+      selectMonth(state, action){
+        state.selectedMonth=action.payload
+      },
+
+      selectYear(state, action){
+        state.selectedYear=action.payload
+      }
 
     },
   });

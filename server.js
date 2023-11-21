@@ -66,14 +66,13 @@ app.post("/api/addcategory", async (req, res) => {
 
 app.post("/api/addtransaction", async (req, res) => {
   try {
-    const { category_name, type, amount, description, month, day, year, amountDifference } = req.body;
+    const { category_name, type, amount, description, month, year, amountDifference } = req.body;
     const newTransaction = new Transaction({
       category_name,
       type,
       amount,
       description,
-      month, 
-      day, 
+      month,  
       year
     });
     await newTransaction.save();
