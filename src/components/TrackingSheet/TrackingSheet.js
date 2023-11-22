@@ -8,25 +8,58 @@ import { months, years } from "../SetBudget/DateOptions";
 import { useSelector, useDispatch } from "react-redux";
 import { modalActions } from "../../store/modal";
 import getTransactionsByDate from './getTransactionsByDate'
-
 const TrackingSheet = ({ transactions }) => {
-  // const TrackingSheet = () => {
 
   const dispatch = useDispatch();
   const showEditModal = useSelector((state) => state.modal.displayModal);
   const [transactionsState, setTransactionsState] = useState(transactions);
   const [selectedYear, setSelectedYear] = useState(null);
   const [selectedMonth, setSelectedMonth] = useState(null);
+  const [filteredTransactionsState, setFilteredTransactionsState] = useState([])
+
+  const displayTransactionsByDate = async () => {
+    const filteredTransactions = await getTransactionsByDate(selectedYear, selectedMonth);
+    setTransactionsState(filteredTransactions);
+    setFilteredTransactionsState(filteredTransactions);
+  };
+
+  const compareStates = () => {
+    let newTransactions = transactions.filter(transaction =>
+      !filteredTransactionsState.some(prevTransaction => prevTransaction['_id'] === transaction['_id'])
+    );
+  
+    if (newTransactions) {
+      handleAddTransaction(newTransactions);
+    }
+  };
+
+  const handleAddTransaction = (newTransaction) => {
+    if (newTransaction !== null) {
+      if (
+        newTransaction.year === selectedYear &&
+        newTransaction.month === selectedMonth
+      ) {
+        setFilteredTransactionsState((prevTransactions) => [...prevTransactions, newTransaction]);
+      }
+    }
+  };
+
+  
+
+  // useEffect(() => {
+  //   setTransactionsState(transactions);
+  //   compareStates()
+    
+
+  // }, [transactions,]);
 
   useEffect(() => {
-    setTransactionsState(transactions);
-  }, [transactions]);
-
-  useEffect(() => {
+    compareStates()
     if (selectedMonth !== null && selectedYear !== null) {
       displayTransactionsByDate();
+
     }
-  }, [selectedMonth, selectedYear]);
+  }, [selectedMonth, selectedYear, transactions]);
 
   const selectedYearHandler = (year) => {
     console.log(year.value);
@@ -52,10 +85,7 @@ const TrackingSheet = ({ transactions }) => {
       );
     }
   };
-  const displayTransactionsByDate = async () => {
-    const filteredTransactions = await getTransactionsByDate(selectedYear, selectedMonth);
-    setTransactionsState(filteredTransactions);
-  };
+
 
   const editHandler = (transaction) => {
     dispatch(transactionActions.selectTransaction(transaction));
@@ -63,12 +93,12 @@ const TrackingSheet = ({ transactions }) => {
     dispatch(modalActions.displayModal());
   };
 
-  const addHandler = () => {
+  const addHandler = async () => {
     dispatch(modalActions.isAdding());
     dispatch(transactionActions.selectMonth(selectedMonth)); 
     dispatch(transactionActions.selectYear(selectedYear)); 
-  };
-
+    // await displayTransactionsByDate()
+  }
 
 
   return (
@@ -131,7 +161,8 @@ const TrackingSheet = ({ transactions }) => {
           </tr>
         </thead>
         <tbody>
-          {transactionsState.map((transaction) => (
+          
+          {filteredTransactionsState.map((transaction) => (
             <tr>
               <td>{transaction.month}{transaction.year}</td>
               <td>{transaction.description}</td>

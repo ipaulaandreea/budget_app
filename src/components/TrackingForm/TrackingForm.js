@@ -10,7 +10,7 @@ import axios from 'axios';
 import {budgetItemActions} from '../../store/budgetItems';
 import {fetchBudgetEntries} from '../../store/budgetItems'
 import {updateActualAmount} from './updateActualAmount'
-
+import {transactionActions} from '../../store/transaction'
 
 
 
@@ -75,19 +75,10 @@ const TrackingForm = ({ method, expense }) => {
         month: selectedMonth,
         year: selectedYear,
       };
-
-      // const handleAddTransaction = (newTransaction) => {
-      //   // Update transactionsState only if the new transaction matches the selected month and year
-      //   if (
-      //     newTransaction.year === selectedYear &&
-      //     newTransaction.month === selectedMonth
-      //   ) {
-      //     setTransactionsState((prevTransactions) => [...prevTransactions, newTransaction]);
-      //   }
-      // }; - de corelat cu trackingSheet, poate facut un redux slice cu filtered transactions;
       dispatch(budgetItemActions.addTransaction(transactionData));
+      dispatch(transactionActions.addedTransaction(transactionData))
       // dispatch(budgetItemActions.updateAmount({ id: yourEntryId, amount: newAmount }));
-      dispatch(fetchBudgetEntries());
+      // dispatch(fetchBudgetEntries());
       dispatch(modalActions.hideModal());
     } catch (error) {
       console.error("Error adding transaction:", error);
@@ -209,8 +200,6 @@ export async function action({ request, params }) {
       const response = await axios.post('http://localhost:5000/api/addtransaction', {category_name, type, description, amount, month, year});
       console.log('New category created:', response.data);
       await updateActualAmount(transactionData, amountDifference)
-      const addedTransaction=response.data;
-      handleAddTransaction(addedTransaction);
     } catch (error) {
       console.error('Error creating post:', error);
     }
