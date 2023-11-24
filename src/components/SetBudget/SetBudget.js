@@ -4,21 +4,24 @@ import { useState, useEffect } from "react";
 import AddBudgetCategory from "../AddBudgetCategory";
 import { useSelector, useDispatch } from "react-redux";
 import { budgetCategoryActions } from "../../store/budgetcategories";
-import {fetchBudgetEntries} from '../../store/budgetItems'
+import { fetchBudgetEntries } from "../../store/budgetItems";
+import { budgetItemActions } from "../../store/budgetItems";
 
-const SetBudget = ({ expensesByMonth, incomeByMonth }) => {
+const SetBudget = () => {
   const [selectedYear, setSelectedYear] = useState(null);
   const [selectedMonth, setSelectedMonth] = useState(null);
-  const incomeEntries = useSelector((state) => state.budgetItem.incomeBudgetEntries);
-  const expensesEntries = useSelector((state) => state.budgetItem.expensesBudgetEntries);
+  const [incomeEntriesState, setIncomeEntriesState] = useState([]);
+  const [expensesEntriesState, setExpensesEntriesState] = useState([]);
+
+  const incomeEntries = useSelector(
+    (state) => state.budgetItem.incomeBudgetEntries
+  );
+  const expensesEntries = useSelector(
+    (state) => state.budgetItem.expensesBudgetEntries
+  );
 
   const dispatch = useDispatch();
- 
-  
 
-  // console.log({ expensesByMonth, incomeByMonth });
-
-  
   const isAddingIncomeCategory = useSelector(
     (state) => state.budgetCategory.isAddingIncomeCategory
   );
@@ -26,20 +29,32 @@ const SetBudget = ({ expensesByMonth, incomeByMonth }) => {
     (state) => state.budgetCategory.isAddingExpensesCategory
   );
 
-
-  const addIncomeCategoryHandler = async  () => {
+  const addIncomeCategoryHandler = async () => {
     dispatch(budgetCategoryActions.addIncomeCategory());
-    dispatch(fetchBudgetEntries());
+    dispatch(fetchBudgetEntries({ month: selectedMonth, year: selectedYear }));
   };
 
-  const addExpenseCategoryHandler = async  () => {
+  const addExpenseCategoryHandler = async () => {
     dispatch(budgetCategoryActions.addExpenseCategory());
-    dispatch(fetchBudgetEntries());
+    dispatch(fetchBudgetEntries({ month: selectedMonth, year: selectedYear }));
   };
-  
+
+
   useEffect(() => {
-    dispatch(fetchBudgetEntries());
-  }, [dispatch]);
+    const fetchData = async () => {
+      await dispatch(fetchBudgetEntries({ month: selectedMonth, year: selectedYear }));
+    };
+    fetchData();
+  }, [dispatch, selectedMonth, selectedYear]);
+
+  useEffect(() => {
+    setIncomeEntriesState(incomeEntries);
+  }, [incomeEntries]);
+
+  useEffect(() => {
+    setExpensesEntriesState(expensesEntries);
+  }, [expensesEntries]);
+
 
   // const getIncomeTotal = () => {
   //   let incomeTotal = 0;
@@ -54,14 +69,24 @@ const SetBudget = ({ expensesByMonth, incomeByMonth }) => {
   // };
 
   const selectedYearHandler = (year) => {
-    console.log(year.value);
     setSelectedYear(year.value);
+    dispatch(budgetItemActions.selectYear(year.value));
+    dispatch(fetchBudgetEntries({ month: selectedMonth, year: year.value }));
+    if (selectedYear !==null & selectedMonth !== null){
+      setIncomeEntriesState(incomeEntries)
+      setExpensesEntriesState(expensesEntries)
+    }
   };
 
   const selectedMonthHandler = (month) => {
     setSelectedMonth(month.value);
+    dispatch(budgetItemActions.selectMonth(month.value));
+    dispatch(fetchBudgetEntries({ month: month.value, year: selectedYear }));
+    if (selectedYear !==null & selectedMonth !== null){
+      setIncomeEntriesState(incomeEntries)
+      setExpensesEntriesState(expensesEntries)
+    }
   };
-
 
   return (
     <>
@@ -113,7 +138,7 @@ const SetBudget = ({ expensesByMonth, incomeByMonth }) => {
                 </tr>
               </thead>
               <tbody>
-                {incomeEntries.map((income) => (
+                {incomeEntriesState.map((income) => (
                   <tr>
                     <td>{income["category_name"]}</td>
                     <td>{income["amount_expected"]}</td>
@@ -156,7 +181,7 @@ const SetBudget = ({ expensesByMonth, incomeByMonth }) => {
                 </tr>
               </thead>
               <tbody>
-                {expensesEntries.map((expense) => (
+                {expensesEntriesState.map((expense) => (
                   <tr>
                     <td>{expense["category_name"]}</td>
                     <td>{expense["amount_expected"]}</td>

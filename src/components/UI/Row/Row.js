@@ -4,11 +4,14 @@ import { useSelector, useDispatch } from "react-redux";
 import axios from 'axios';
 import getCategories from '../../../components/SetBudget/getCategories'
 import { budgetCategoryActions } from '../../../store/budgetcategories'
+
 const Row = ({ method }) => {
   
   const dispatch = useDispatch();
   const fetchedIncomeCategories = useSelector((state) => state.category.incomeCategories);
   const fetchedExpensesCategories = useSelector((state) => state.category.expensesCategories);
+  const selectedMonth = useSelector((state) => state.budgetItem.selectedMonth);
+  const selectedYear = useSelector((state) => state.budgetItem.selectedYear);
 
   const isAddingIncomeCategory = useSelector(
     (state) => state.budgetCategory.isAddingIncomeCategory
@@ -21,8 +24,17 @@ const Row = ({ method }) => {
     dispatch(budgetCategoryActions.cancelAdding());
   }
 
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    let method = "POST"
+    await action({
+      request: event,
+      params: { selectedMonth, selectedYear,method },
+    });
+  };
+
   return (
-    <Form method={method}>
+    <Form method={method} onSubmit = {handleSubmit} >
       <RForm.Select id="category" size="sm" placeholder="Select category">
         {isAddingIncomeCategory &&
           fetchedIncomeCategories.map((category) => (
@@ -53,7 +65,9 @@ const Row = ({ method }) => {
 export default Row;
 
 export async function action({ request, params }) {
-  const method = request.method;
+  const method = params.method;
+  const selectedMonth = params.selectedMonth;
+  const selectedYear = params.selectedYear;
   let categories = await getCategories();
   const mergedCategories = [
     ...categories.incomeCategories,
@@ -65,15 +79,16 @@ export async function action({ request, params }) {
       (category) => category['category_name'] === selectedValue
     );
 
-  const data = await request.formData();
+  // const data = await request.formData();
+  var amount_expected = document.getElementById("amount_expected");
 
 
   const categoryData = {
     category_name: selectedValue,
-    amount_expected: data.get("amount_expected"),
+    amount_expected: parseInt(amount_expected.value),
     type: foundCategory[0]['type'] ,
-    month: 1,
-    year: 2023,
+    month: selectedMonth,
+    year: selectedYear,
     amount_actual: 0,
   };
 

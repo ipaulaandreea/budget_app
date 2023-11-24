@@ -42,9 +42,20 @@ app.get("/api/transactions", async (req, res) => {
 
 const BudgetEntry = require("./models/BudgetEntry");
 app.get("/api/budget", async (req, res) => {
+  
   console.log("GET budget entries!!!!!!");
   try {
-    const budgetEntries = await BudgetEntry.find();
+
+    const { month, year } = req.body;
+    // const query = {};
+    // if (month) {
+    //   query.month = month;
+    // }
+    // if (year) {
+    //   query.year = year;
+    // }
+
+    const budgetEntries = await BudgetEntry.find(month, year);
     res.json(budgetEntries);
   } catch (error) {
     console.error(error);
@@ -180,6 +191,7 @@ app.post("/api/addbudgetentry", async (req, res) => {
     });
     await newBudgetEntry.save();
     res.status(201).json(newBudgetEntry);
+    console.log('added filtered budget entry')
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });

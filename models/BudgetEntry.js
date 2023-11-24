@@ -5,8 +5,8 @@ const budgetEntrySchema = new mongoose.Schema({
   amount_actual: Number,
   category_name: String,
   type: String,
-  month: Number,
-  year: Number,
+  month: String,
+  year: String
 });
 
 module.exports = mongoose.model("BudgetEntry", budgetEntrySchema);
