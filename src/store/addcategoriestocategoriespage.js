@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, createAction } from "@reduxjs/toolkit";
 import getCategories from "./../components/SetBudget/getCategories";
 
 const fetchCategories = createAsyncThunk(
@@ -14,6 +14,7 @@ const fetchCategories = createAsyncThunk(
     }
   }
 );
+// const addNewCategory = createAction('budgetCategory/addNewCategory');
 
 const categorySlice = createSlice({
   name: "category",
@@ -38,11 +39,20 @@ const categorySlice = createSlice({
     builder.addCase(fetchCategories.fulfilled, (state, action) => {
       state.incomeCategories = action.payload.incomeCategories;
       state.expensesCategories = action.payload.expensesCategories;
-    });
+    })
+    // .addCase(categorySlice.addNewCategory, (state, action) => {
+    //   const newCategory = action.payload;
+    //   if (newCategory.type === 'income') {
+    //     state.incomeCategories = [...state.incomeCategories, newCategory];
+    //   } else {
+    //     state.expensesCategories = [...state.expensesCategories, newCategory];
+    //   }
+    // });
   },
 
 });
 
 export const categoryActions = categorySlice.actions;
-export { fetchCategories };
+export { fetchCategories};
+// export {addNewCategory}
 export default categorySlice.reducer;

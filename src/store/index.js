@@ -5,7 +5,6 @@ import budgetItemReducer, {fetchBudgetEntries} from './budgetItems'
 import categoryReducer, {fetchCategories} from './addcategoriestocategoriespage'
 import budgetCategoryReducer, {fetchBudgetCategories} from './budgetcategories'
 
-
 const store = configureStore({
     reducer: { 
       modal: modalReducer, 
@@ -24,6 +23,7 @@ const store = configureStore({
   store.dispatch(fetchCategories());
   store.dispatch(fetchBudgetCategories());
   store.dispatch(fetchBudgetEntries());
+  // store.dispatch(addNewCategory())
 
   
   export default store;

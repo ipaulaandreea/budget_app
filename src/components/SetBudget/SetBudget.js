@@ -13,6 +13,7 @@ const SetBudget = () => {
   const [incomeEntriesState, setIncomeEntriesState] = useState([]);
   const [expensesEntriesState, setExpensesEntriesState] = useState([]);
 
+  
   const incomeEntries = useSelector(
     (state) => state.budgetItem.incomeBudgetEntries
   );
@@ -29,22 +30,55 @@ const SetBudget = () => {
     (state) => state.budgetCategory.isAddingExpensesCategory
   );
 
+
+
+  const compareStates = () => {
+    let newIncomeEntry = incomeEntries.filter(incomeEntry =>
+      !incomeEntriesState.some(prevIncomeEntry => prevIncomeEntry['_id'] === incomeEntry['_id'])
+    );
+  
+    if (newIncomeEntry.length > 0) {
+      setIncomeEntriesState((prevIncomeEntries) => [
+        ...prevIncomeEntries,
+        ...newIncomeEntry,
+      ]);
+    }
+
+    let newExpenseEntry = expensesEntries.filter(expenseEntry =>
+      !expensesEntriesState.some(prevExpensesEntry => prevExpensesEntry['_id'] === expenseEntry['_id'])
+    );
+  
+    if (newExpenseEntry.length > 0) {
+      setIncomeEntriesState((prevExpensesEntries) => [
+        ...prevExpensesEntries,
+        ...newExpenseEntry,
+      ]);
+    }
+  };
+
+
   const addIncomeCategoryHandler = async () => {
     dispatch(budgetCategoryActions.addIncomeCategory());
-    dispatch(fetchBudgetEntries({ month: selectedMonth, year: selectedYear }));
+    await dispatch(fetchBudgetEntries({ month: selectedMonth, year: selectedYear }));
+    // setIncomeEntriesState(incomeEntries);
+    compareStates();
   };
-
+  
   const addExpenseCategoryHandler = async () => {
     dispatch(budgetCategoryActions.addExpenseCategory());
-    dispatch(fetchBudgetEntries({ month: selectedMonth, year: selectedYear }));
+    await dispatch(fetchBudgetEntries({ month: selectedMonth, year: selectedYear }));
+    compareStates();
   };
 
+  
 
   useEffect(() => {
     const fetchData = async () => {
       await dispatch(fetchBudgetEntries({ month: selectedMonth, year: selectedYear }));
     };
     fetchData();
+  
+
   }, [dispatch, selectedMonth, selectedYear]);
 
   useEffect(() => {
@@ -138,13 +172,13 @@ const SetBudget = () => {
                 </tr>
               </thead>
               <tbody>
-                {incomeEntriesState.map((income) => (
+                {incomeEntriesState && (incomeEntriesState.map((income) => (
                   <tr>
                     <td>{income["category_name"]}</td>
                     <td>{income["amount_expected"]}</td>
                     <td>{income["amount_actual"]}</td>
                   </tr>
-                ))}
+                )))}
 
                 {isAddingIncomeCategory && (
                   <tr>
@@ -181,13 +215,13 @@ const SetBudget = () => {
                 </tr>
               </thead>
               <tbody>
-                {expensesEntriesState.map((expense) => (
+                {expensesEntriesState && (expensesEntriesState.map((expense) => (
                   <tr>
                     <td>{expense["category_name"]}</td>
                     <td>{expense["amount_expected"]}</td>
                     <td>{expense["amount_actual"]}</td>
                   </tr>
-                ))}
+                )))}
                 {isAddingExpensesCategory && (
                   <tr>
                     <td>

@@ -15,6 +15,7 @@ const fetchBudgetCategories = createAsyncThunk(
   }
 );
 
+
 const budgetCategorySlice = createSlice({
     name: "budgetCategory",
     initialState: {
@@ -25,11 +26,20 @@ const budgetCategorySlice = createSlice({
 
     },
     reducers: {
-      
+      addNewCategory(state, action) {
+        // Assuming action.payload is the new category
+        const newCategory = action.payload;
+        if (newCategory.type === 'income') {
+          state.incomeCategories = [...state.incomeCategories, newCategory];
+        } else {
+          state.expensesCategories = [...state.expensesCategories, newCategory];
+        }
+      },
 
       addIncomeCategory(state, action) {
         state.isAddingIncomeCategory = true;
         state.isAddingExpensesCategory = false;
+        
        
       },
 
@@ -50,11 +60,11 @@ const budgetCategorySlice = createSlice({
       builder.addCase(fetchBudgetCategories.fulfilled, (state, action) => {
         state.incomeCategories = action.payload.incomeCategories;
         state.expensesCategories = action.payload.expensesCategories;
-      });
-    },
-  
+      })
+    }
   });
   
   export const budgetCategoryActions = budgetCategorySlice.actions;
   export {fetchBudgetCategories} ;
+ 
   export default budgetCategorySlice.reducer;

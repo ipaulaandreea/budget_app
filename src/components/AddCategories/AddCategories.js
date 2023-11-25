@@ -24,6 +24,7 @@ const AddCategories = (categories) => {
         type: formData.get("type"),
         category_name: formData.get("category_name"),
       };
+      // dispatch(categoryActions.addNewCategory());
       setCategoriesState((prevState => {
         return [...prevState, categoryData]
       }))
