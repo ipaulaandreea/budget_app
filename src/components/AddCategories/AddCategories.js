@@ -1,7 +1,7 @@
 import { Form } from "react-router-dom";
 import {useState, useRef } from 'react';
 import { useSelector, useDispatch } from "react-redux";
-import { categoryActions } from "../../store/addcategoriestocategoriespage";
+import { categoryActions, fetchCategories } from "../../store/addcategoriestocategoriespage";
 import { Table } from "react-bootstrap";
 import {deleteCategory} from '../../components/AddCategories/deleteCategoryFunc'
 import {action as addCategoryFunc} from '../../components/AddCategories/addCategoryFunc'
@@ -14,8 +14,9 @@ const AddCategories = (categories) => {
     (state) => state.category.isAddingCategory
   );
 
-  const addCategoryHandler = () => {
+  const addCategoryHandler = async () => {
     dispatch(categoryActions.addCategory());
+    await dispatch(fetchCategories());
   };
 
   const saveHandler = async (event, params ) => {

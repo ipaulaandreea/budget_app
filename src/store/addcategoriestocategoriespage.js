@@ -32,13 +32,31 @@ const categorySlice = createSlice({
     cancelAdding(state, action) {
       state.isAddingCategory = false;
 
-    }
+    },
+
+    addNewCategory(state, action) {
+      const newCategory = action.payload;
+      if (newCategory.type === 'income') {
+        state.incomeCategories = [...state.incomeCategories, newCategory];
+      } else {
+        state.expensesCategories = [...state.expensesCategories, newCategory];
+      }
+      state.isAddingCategory = false; // Assuming you want to reset the flag after adding
+    },
 
   },
   extraReducers: (builder) => {
     builder.addCase(fetchCategories.fulfilled, (state, action) => {
       state.incomeCategories = action.payload.incomeCategories;
       state.expensesCategories = action.payload.expensesCategories;
+
+      // const newCategory = action.payload;
+      //   if (newCategory.type === 'income') {
+      //     state.incomeCategories = [...state.incomeCategories, newCategory];
+      //   } else {
+      //     state.expensesCategories = [...state.expensesCategories, newCategory];
+      //   }
+
     })
     // .addCase(categorySlice.addNewCategory, (state, action) => {
     //   const newCategory = action.payload;

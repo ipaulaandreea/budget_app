@@ -1,10 +1,12 @@
 import { Form, redirect } from "react-router-dom";
 import { Form as RForm } from "react-bootstrap";
 import { useSelector, useDispatch } from "react-redux";
+import {useEffect} from 'react'
 import axios from "axios";
 import getCategories from "../../../components/SetBudget/getCategories";
 import { budgetCategoryActions } from "../../../store/budgetcategories";
 import { fetchBudgetEntries } from "../../../store/budgetItems";
+import {fetchCategories} from '../../../store/addcategoriestocategoriespage'
 const Row = ({ method }) => {
   const dispatch = useDispatch();
   const fetchedIncomeCategories = useSelector(
@@ -49,10 +51,16 @@ const Row = ({ method }) => {
       params: { selectedMonth, selectedYear, method },
     });
     hideRowHandler();
+
+
     await dispatch(
       fetchBudgetEntries({ month: selectedMonth, year: selectedYear })
     );
   };
+
+  useEffect(() => {
+    dispatch(fetchCategories());
+  }, [dispatch, isAddingIncomeCategory, isAddingExpensesCategory]);
 
   return (
     <Form method={method} onSubmit={handleSubmit}>
