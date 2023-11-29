@@ -66,6 +66,14 @@ function MainNavigation() {
             >
               Budget Planner
             </NavLink>
+            <NavLink
+              to="auth"
+              className={({ isActive }) =>
+                isActive ? classes.active : undefined
+              }
+            >
+              Authentication
+            </NavLink>
           </Nav>
         </Navbar.Collapse>
       </Container>
