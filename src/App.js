@@ -14,8 +14,9 @@ import BudgetCategoriesPage from './pages/BudgetCategoriesPage'
 import {loader as addCategoryLoader} from './pages/BudgetCategoriesPage'
 import {action as addCategoryToDbAction} from './components/AddCategories/addCategoryFunc'
 import AuthenticationPage from './pages/Authentication';
-import {action as logoutAction } from './pages/Logout';
+import {action as logoutAction } from '../src/logout';
 import {action as authAction} from './components/AuthForm'
+import LogoutPage from './pages/Logout'
 
 function App() {
 
@@ -32,8 +33,8 @@ function App() {
         {path: 'set-budget', element: <BudgetSetterPage/>, loader: budgetSettingLoader, action: addNewCategoryAction},
         {path: 'instructions', element: <InstructionsPage/>},
         {path: 'budget-categories', element: <BudgetCategoriesPage/>, loader: addCategoryLoader, action: addCategoryToDbAction},
-        {path: 'auth', element: <AuthenticationPage/>,  action: authAction},
-        {path: 'logout', action: logoutAction },
+        {path: 'auth', element: <AuthenticationPage/>, action: authAction, name:"auth"},
+        {path: 'logout',element: <LogoutPage/>, action: logoutAction },
 
 
 

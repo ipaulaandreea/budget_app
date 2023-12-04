@@ -1,7 +1,9 @@
-import { redirect } from 'react-router-dom';
+const LogoutPage = () => {
+    return (
+        <>
+        </>
+    )
 
-export function action() {
-  localStorage.removeItem('token');
-  localStorage.removeItem('expiration');
-  return redirect('/');
 }
+
+export default LogoutPage;

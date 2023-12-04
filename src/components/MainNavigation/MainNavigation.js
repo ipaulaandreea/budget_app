@@ -1,6 +1,6 @@
 import classes from "./MainNavigation.module.css";
 import { NavLink } from "react-router-dom";
-
+import logoutFunc from '../../logout'
 import { Nav, Navbar, Container } from "react-bootstrap";
 
 function MainNavigation() {
@@ -74,7 +74,13 @@ function MainNavigation() {
             >
               Authentication
             </NavLink>
+            {/* <NavLink
+              to="logout">
+              Logout
+            </NavLink> */}
+          <button onClick = {logoutFunc}>Logout </button>
           </Nav>
+          
         </Navbar.Collapse>
       </Container>
     </Navbar>

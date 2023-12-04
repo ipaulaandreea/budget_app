@@ -4,11 +4,17 @@ import { Form as DForm } from "react-bootstrap";
 import Row from "react-bootstrap/Row";
 import axios from "axios";
 import { redirect } from "react-router-dom";
-import { Form } from "react-router-dom";
-function HorizontalExample() {
+import { Form, Link, useSearchParams, json } from "react-router-dom";
+
+const AuthForm =()=> {
+
+  const [searchParams] = useSearchParams();
+  const isLogin = searchParams.get("mode") === "login";
+
   return (
     <Form method="POST">
-      <DForm.Group as={Row} className="mb-3" controlId="formHorizontalEmail">
+       <h1>{isLogin ? "Log in" : "Create a new user"}</h1>
+      <DForm.Group as={Row} className="mb-3">
         <DForm.Label column sm={2}>
           Username
         </DForm.Label>
@@ -23,7 +29,7 @@ function HorizontalExample() {
         </Col>
       </DForm.Group>
 
-      <DForm.Group as={Row} className="mb-3" controlId="formHorizontalPassword">
+      <DForm.Group as={Row} className="mb-3">
         <DForm.Label column sm={2}>
           Password
         </DForm.Label>
@@ -39,34 +45,74 @@ function HorizontalExample() {
       </DForm.Group>
       <DForm.Group as={Row} className="mb-3">
         <Col sm={{ span: 10, offset: 2 }}>
-          <Button type="submit">Sign up</Button>
+        <Link to={`?mode=${isLogin ? "signup" : "login"}`}>
+            {" "}
+            {isLogin ? "Create new user" : "Login"}
+          </Link>
+          <Button type="submit">{isLogin ? "Login"  : "Create new user"}</Button>
         </Col>
       </DForm.Group>
     </Form>
   );
 }
 
-export default HorizontalExample;
+export default AuthForm;
 
 export async function action({ request, params }) {
   const method = request.method;
+  const searchParams = new URL(request.url).searchParams
+  const mode = searchParams.get('mode') || 'login';
   const data = await request.formData();
-
+  const username = data.get('username');
+  const password = data.get('password');
   let userData = {
     username: data.get("username"),
-    password: data.get("password"),
-  };
+    password: data.get("password")
+  }
+
+  if (mode !=='login' && mode!=='signup') {
+    throw json({message: 'Unsupported mode.'}, {status: 422})
+  }
 
   if (method === "POST") {
-    try {
-      const response = await axios.post("http://localhost:5000/api/signup", {
-        userData,
-      });
-      console.log("New user created:", response.data);
-    } catch (error) {
-      console.error("Error creating user:", error);
-    }
+    if (mode === 'signup'){
+      try {
+        const response = await axios.post("http://localhost:5000/api/signup", {
+          userData,
+        });
+        console.log("New user created:", response.data);
+      } catch (error) {
+        console.error("Error creating user:", error);
+      }
+  
+      return redirect("/");
 
-    return redirect("/");
   }
+
+  if (mode === 'login'){
+    try {
+      axios.post("http://localhost:5000/api/login", {
+        username, password
+      }, {
+        withCredentials: true
+      })
+      .then(response => {
+        console.log("success - we have a cookie!");
+        sessionStorage.setItem('token', response.data.token)
+      })
+      ;
+      localStorage.setItem('user', userData.username);
+      return redirect("/");
+    } catch (error) {
+      console.error("Error logging in:", error);
+      
+    } 
+    
+    }
+    return null;
+
 }
+}
+
+   
+  

@@ -1,11 +1,11 @@
 import { Container } from "react-bootstrap";
-import { useLoaderData, Await, defer } from "react-router-dom";
+import { useLoaderData, Await, defer, redirect } from "react-router-dom";
 import AddCategories from "../components/AddCategories/AddCategories";
 import axios from 'axios';
+import getCredentials from "../Credentials";
 
 const BudgetCategoriesPage = () => {
   const categories = useLoaderData();
-  console.log(categories);
 
   return (
     <Await resolve={categories}>
@@ -21,17 +21,24 @@ const BudgetCategoriesPage = () => {
 export default BudgetCategoriesPage;
 
 export async function getCategories() {
-  try {
-    let response = await axios.get('http://localhost:5000/api/getcategories');
-    return response.data;
-  } catch (error) {
-    console.error('Error getting categories:', error);
-    throw error;
-  }
+  let credentials = getCredentials();
+  let response = await axios.get('http://localhost:5000/api/getcategories', 
+  {withCredentials: true},
+  {
+    headers: {
+      'Authorization': `Bearer ${credentials.getToken()}`,
+      'Cookie': `${credentials.getRefreshTokenForHeader()}`
+    }
+  });
+  return response.data;
 }
 
 
 export async function loader() {
-  let categories = await getCategories();
-  return defer({ categories });
+  try {
+    let categories = await getCategories();
+    return defer({ categories });
+  } catch (error) {
+    return redirect("/auth?mode=login");
+  }
 }
