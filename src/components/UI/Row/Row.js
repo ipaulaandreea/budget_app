@@ -7,6 +7,9 @@ import getCategories from "../../../components/SetBudget/getCategories";
 import { budgetCategoryActions } from "../../../store/budgetcategories";
 import { fetchBudgetEntries } from "../../../store/budgetItems";
 import {fetchCategories} from '../../../store/addcategoriestocategoriespage'
+import getCredentials from "../../../Credentials";
+
+
 const Row = ({ method }) => {
   const dispatch = useDispatch();
   const fetchedIncomeCategories = useSelector(
@@ -120,10 +123,18 @@ export async function action({ request, params }) {
   };
 
   if (method === "POST") {
+    let credentials = getCredentials();
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/addbudgetentry",
-        { categoryData }
+        "http://localhost:5000/api/addbudgetentry", 
+        { categoryData },  
+        {withCredentials: true},
+        {
+          headers: {
+            'Authorization': `Bearer ${credentials.getToken()}`,
+            'Cookie': `${credentials.getRefreshTokenForHeader()}`
+          }
+        }
       );
       console.log("New category created:", response.data);
     } catch (error) {

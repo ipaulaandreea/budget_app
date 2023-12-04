@@ -17,6 +17,7 @@ import AuthenticationPage from './pages/Authentication';
 import {action as logoutAction } from '../src/logout';
 import {action as authAction} from './components/AuthForm'
 import LogoutPage from './pages/Logout'
+// import { checkAuthLoader } from './checkAuth'
 
 function App() {
 

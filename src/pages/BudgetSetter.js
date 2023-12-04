@@ -1,6 +1,6 @@
 import { Container } from "react-bootstrap";
 import SetBudget from "../components/SetBudget/SetBudget";
-import { useLoaderData, Await, defer } from "react-router-dom";
+import { useLoaderData, Await, defer, redirect } from "react-router-dom";
 import getBudgetEntries from '../components/SetBudget/getBudgetEntries'
 const BudgetSetterPage = () => {
   const { expensesByMonth, incomeByMonth } = useLoaderData();
@@ -19,10 +19,35 @@ const BudgetSetterPage = () => {
   );
 };
 
+
 export default BudgetSetterPage;
 
-export async function loader() {
-  let budget  = await getBudgetEntries();
-  console.log(budget)
-  return defer({ expensesByMonth: budget.expensesCategories, incomeByMonth: budget.incomeCategories });
+function getRefreshToken(){
+  const cookies = document.cookie.split(';');
+      for (const cookie of cookies) {
+        const [cookieName, cookieValue] = cookie.split('=');
+        if (cookieName.trim() === 'refreshToken') {
+          return cookieValue;
+        }
+      }
+
 }
+
+export async function loader() {
+  const refreshToken = getRefreshToken();
+
+    if(!refreshToken){
+        return redirect('/auth')
+    } else {
+      try{
+        let budget  = await getBudgetEntries();
+        console.log(budget)
+        return defer({ expensesByMonth: budget.expensesCategories, incomeByMonth: budget.incomeCategories });
+      } catch (error) {
+        throw error;
+        }
+         
+      }
+    }
+ 
+

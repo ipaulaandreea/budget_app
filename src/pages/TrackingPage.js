@@ -1,6 +1,8 @@
 import TrackingSheet from "../components/TrackingSheet/TrackingSheet";
-import { useLoaderData, Await, defer } from "react-router-dom";
+import { useLoaderData, Await, defer, redirect } from "react-router-dom";
 import axios from "axios";
+import getCredentials from "../Credentials";
+
 
 const TrackingPage = () => {
   const { transactions } = useLoaderData();
@@ -18,8 +20,15 @@ const TrackingPage = () => {
 export default TrackingPage;
 
 async function getTransactions() {
+  let credentials = getCredentials();
   try {
-    const response = await axios.get("http://localhost:5000/api/transactions");
+    const response = await axios.get("http://localhost:5000/api/transactions",
+      {withCredentials: true},
+      {
+        headers: {
+          'Authorization': `Bearer ${credentials.getToken()}`,
+          'Cookie': `${credentials.getRefreshTokenForHeader()}`
+        }});
     return response.data;
   } catch (error) {
     console.error("Error getting transactions:", error);
@@ -28,6 +37,10 @@ async function getTransactions() {
 }
 
 export async function loader() {
+  try {
   let transactions = await getTransactions();
   return defer({ transactions });
+} catch (error) {
+  return redirect("/auth?mode=login");
+}
 }

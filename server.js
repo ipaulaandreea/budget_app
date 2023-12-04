@@ -34,7 +34,7 @@ app.get("/api/getcategories", authenticate, async (req, res) => {
 });
 
 const Transaction = require("./models/Transaction");
-app.get("/api/transactions", async (req, res) => {
+app.get("/api/transactions", authenticate, async (req, res) => {
   console.log("GET transactions!!!!!!");
   try {
     const transactions = await Transaction.find();
@@ -46,7 +46,7 @@ app.get("/api/transactions", async (req, res) => {
 });
 
 const BudgetEntry = require("./models/BudgetEntry");
-app.get("/api/budget", async (req, res) => {
+app.get("/api/budget", authenticate, async (req, res) => {
   console.log("GET budget entries!!!!!!");
   try {
     const { month, year } = req.body;
@@ -59,7 +59,7 @@ app.get("/api/budget", async (req, res) => {
   }
 });
 
-app.post("/api/addcategory", async (req, res) => {
+app.post("/api/addcategory", authenticate, async (req, res) => {
   try {
     const { category_name, type } = req.body;
     const newCategory = new Category({ category_name, type });
@@ -71,7 +71,7 @@ app.post("/api/addcategory", async (req, res) => {
   }
 });
 
-app.post("/api/addtransaction", async (req, res) => {
+app.post("/api/addtransaction", authenticate, async (req, res) => {
   try {
     const {
       category_name,
@@ -106,7 +106,7 @@ app.post("/api/addtransaction", async (req, res) => {
   }
 });
 
-app.put("/api/update-budget-amount", async (req, res) => {
+app.put("/api/update-budget-amount", authenticate, async (req, res) => {
   const { category_name, amount, month, year, amountDifference } = req.body;
   console.log("im in server.js");
   try {
@@ -166,7 +166,7 @@ async function updateBudgetAmount(
   }
 }
 
-app.put("/api/updatetransaction/:id", async (req, res) => {
+app.put("/api/updatetransaction/:id", authenticate, async (req, res) => {
   try {
     const updatedData = req.body;
     const id = req.params.id;
@@ -181,7 +181,7 @@ app.put("/api/updatetransaction/:id", async (req, res) => {
   }
 });
 
-app.delete("/api/deletetransaction/:id", async (req, res) => {
+app.delete("/api/deletetransaction/:id", authenticate, async (req, res) => {
   const transactionId = req.params.id;
   const transaction = await Transaction.findById(transactionId);
   const category_name = transaction.category_name;
@@ -199,7 +199,7 @@ app.delete("/api/deletetransaction/:id", async (req, res) => {
   }
 });
 
-app.post("/api/addbudgetentry", async (req, res) => {
+app.post("/api/addbudgetentry", authenticate, async (req, res) => {
   try {
     const data = req.body;
     const newBudgetEntry = new BudgetEntry({
@@ -247,7 +247,7 @@ async function deleteBudgetAmount(category_name, month, year, amount) {
   }
 }
 
-app.delete("/api/deletecategory/:id", async (req, res) => {
+app.delete("/api/deletecategory/:id", authenticate, async (req, res) => {
   const categoryId = req.params.id;
   try {
     await Category.findByIdAndDelete(categoryId);

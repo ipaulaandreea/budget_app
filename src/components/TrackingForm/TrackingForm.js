@@ -11,6 +11,7 @@ import {budgetItemActions} from '../../store/budgetItems';
 import {fetchBudgetEntries} from '../../store/budgetItems'
 import {updateActualAmount} from './updateActualAmount'
 import {transactionActions} from '../../store/transaction'
+import getCredentials from "../../Credentials";
 
 
 
@@ -77,8 +78,6 @@ const TrackingForm = ({ method, expense }) => {
       };
       dispatch(budgetItemActions.addTransaction(transactionData));
       dispatch(transactionActions.addedTransaction(transactionData))
-      // dispatch(budgetItemActions.updateAmount({ id: yourEntryId, amount: newAmount }));
-      // dispatch(fetchBudgetEntries());
       dispatch(modalActions.hideModal());
     } catch (error) {
       console.error("Error adding transaction:", error);
@@ -197,7 +196,16 @@ export async function action({ request, params }) {
 
   if (method === "POST") {
     try {
-      const response = await axios.post('http://localhost:5000/api/addtransaction', {category_name, type, description, amount, month, year});
+      let credentials = getCredentials();
+      const response = await axios.post('http://localhost:5000/api/addtransaction', {category_name, type, description, amount, month, year}, 
+      {withCredentials: true},
+  {
+    headers: {
+      'Authorization': `Bearer ${credentials.getToken()}`,
+      'Cookie': `${credentials.getRefreshTokenForHeader()}`
+    }
+  }
+      );
       console.log('New category created:', response.data);
       await updateActualAmount(transactionData, amountDifference)
     } catch (error) {
@@ -210,6 +218,7 @@ export async function action({ request, params }) {
 
   if (method === "PUT") {
     try {
+    let credentials = getCredentials();
     const state = store.getState();
     const selectedTransaction = state.transaction.selectedTransaction;
     console.log(selectedTransaction)
@@ -226,7 +235,15 @@ export async function action({ request, params }) {
       month: data.get('month'), 
       year: data.get('year')
     }
-    await axios.put(`http://localhost:5000/api/updatetransaction/${id}`, updatedData);
+    await axios.put(`http://localhost:5000/api/updatetransaction/${id}`, updatedData,
+    {withCredentials: true},
+  {
+    headers: {
+      'Authorization': `Bearer ${credentials.getToken()}`,
+      'Cookie': `${credentials.getRefreshTokenForHeader()}`
+    }
+  }
+    );
     console.log('Data updated successfully');
     console.log('amount!!!!!!', amountDifference);
     await updateActualAmount(updatedData, amountDifference)

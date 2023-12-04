@@ -4,6 +4,7 @@ import AddCategories from "../components/AddCategories/AddCategories";
 import axios from 'axios';
 import getCredentials from "../Credentials";
 
+
 const BudgetCategoriesPage = () => {
   const categories = useLoaderData();
 
