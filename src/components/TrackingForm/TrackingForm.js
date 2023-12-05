@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Container, Col } from "react-bootstrap";
 import { Form as BForm } from "react-bootstrap";
 import { Form, useActionData, redirect } from "react-router-dom";
@@ -12,6 +12,8 @@ import {fetchBudgetEntries} from '../../store/budgetItems'
 import {updateActualAmount} from './updateActualAmount'
 import {transactionActions} from '../../store/transaction'
 import getCredentials from "../../Credentials";
+import getCategories from '../../components/SetBudget/getCategories'
+import getBudgetEntries from '../../components/SetBudget/getBudgetEntries'
 
 
 
@@ -23,6 +25,27 @@ const TrackingForm = ({ method, expense }) => {
   const data = useActionData();
   const selectedMonth = useSelector((state) => state.transaction.selectedMonth); 
   const selectedYear = useSelector((state) => state.transaction.selectedYear);   
+  const [expenseCategoriesState, setExpenseCategoriesState] = useState([])
+  const [incomeCategoriesState, setIncomeCategoriesState] = useState([])
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        // let categories = await getCategories();
+        let categories = await getBudgetEntries(selectedMonth,selectedYear );
+        console.log('fetched categories', categories);
+        setExpenseCategoriesState(categories.budgetExpensesCategories)
+        setIncomeCategoriesState(categories.budgetIncomeCategories)
+
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
+
+    fetchCategories();
+  }, [selectedMonth,selectedYear]);
+
+
 
   const categoryOptions = [
     {
@@ -35,31 +58,6 @@ const TrackingForm = ({ method, expense }) => {
     },
   ];
 
-  const subcategoryOptions = {
-    income: [
-      { value: "salary", label: "salary" },
-      { value: "side hustle", label: "side hustle" },
-      { value: "bonus", label: "bonus" },
-      { value: "selling", label: "selling" },
-      { value: "dividens", label: "dividends" },
-      { value: "other", label: "other" },
-    ],
-    expense: [
-      { value: "rent", label: "rent" },
-      { value: "mortage", label: "mortage" },
-      { value: "loans", label: "loans" },
-      { value: "subscriptions", label: "subscriptions" },
-      { value: "electric bill", label: "electric bill" },
-      { value: "water", label: "water" },
-      { value: "gas", label: "gas" },
-      { value: "internet", label: "internet" },
-      { value: "vacation", label: "vacation" },
-      { value: "home maintenance", label: "home maintenance" },
-      { value: "groceries", label: "groceries" },
-      { value: "gifts", label: "gifts" },
-      { value: "shopping", label: "shopping" },
-    ],
-  };
 
   const cancelHandler = () => {
      dispatch(modalActions.hideModal());
@@ -83,6 +81,22 @@ const TrackingForm = ({ method, expense }) => {
       console.error("Error adding transaction:", error);
     }
   };
+
+
+  const renderSubcategoryOptions = selectedCategory !== "" && (
+    selectedCategory === "expense"
+      ? expenseCategoriesState.map((subcategory) => (
+          <option key={subcategory.category_name} value={subcategory.category_name}>
+            {subcategory.category_name}
+          </option>
+        ))
+      : incomeCategoriesState.map((subcategory) => (
+          <option key={subcategory.category_name} value={subcategory.category_name}>
+            {subcategory.category_name}
+          </option>
+        ))
+  );
+
 
   return (
    
@@ -128,12 +142,7 @@ const TrackingForm = ({ method, expense }) => {
             onChange={(e) => setSelectedSubcategory(e.target.value)}
           >
             <option value="">Subcategory</option>
-            {selectedCategory !== "" &&
-              subcategoryOptions[selectedCategory].map((subcategory) => (
-                <option key={subcategory.value} value={subcategory.value}>
-                  {subcategory.label}
-                </option>
-              ))}
+            {renderSubcategoryOptions}
           </BForm.Select>
         </Col>
 

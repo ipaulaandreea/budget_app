@@ -14,73 +14,44 @@ const fetchBudgetEntries = createAsyncThunk(
   }
 );
 
-// const increment = createAction('increment')
-// const decrement = createAction('decrement')
-
-// const amountReducer = createReducer(
-//   {
-//     counter: 0,
-//     sumOfAmountPayloads: 0,
-//     unhandledActions: 0,
-//   },
-//   (builder) => {
-//     builder
-//       .addCase(increment, (state, action) => {
-//         // action is inferred correctly here
-//         state.counter += action.payload
-//       })
-//       // You can chain calls, or have separate `builder.addCase()` lines each time
-//       .addCase(decrement, (state, action) => {
-//         state.counter -= action.payload
-//       })
-//       .addDefaultCase((state, action) => {})
-//   }
-// )
 
 const budgetItemSlice = createSlice({
   name: "budgetItem",
   initialState: {
     selectedBudgetItem: null,
-    incomeBudgetEntries: null,
-    expensesBudgetEntries: null,
+    incomeBudgetEntries: [],
+    expensesBudgetEntries: [],
     selectedMonth: null,
     selectedYear: null,
   },
 
   reducers: {
-    // addTransaction(state, action) {
-    //   const transaction = action.payload;
-
-    //   if (transaction.type === "income") {
-    //     const index = state.incomeBudgetEntries.findIndex(
-    //       (entry) => entry.category_name === transaction.category_name
-    //     );
-
-    //     if (index !== -1) {
-    //       state.incomeBudgetEntries[index].amount_actual +=
-    //         transaction.amount;
-    //     }
-    //   } else {
-    //     const index = state.expensesBudgetEntries.findIndex(
-    //       (entry) => entry.category_name === transaction.category_name
-    //     );
-
-    //     if (index !== -1) {
-    //       state.expensesBudgetEntries[index].amount_actual +=
-    //         transaction.amount;
-    //     }
-    //   }
-    // },
-
+  
     deleteTransaction(state, action) {
       const transaction = action.payload;
-      const index = state.expensesBudgetEntries.findIndex(
+      const expensesindex = state.expensesBudgetEntries.findIndex(
+        (entry) => entry.category_name === transaction.category_name
+      );
+      const incomeindex = state.incomeBudgetEntries.findIndex(
         (entry) => entry.category_name === transaction.category_name
       );
 
-      if (index !== -1) {
-        state.expensesBudgetEntries[index].amount_actual -= transaction.amount;
+      if (expensesindex !== -1) {
+        state.expensesBudgetEntries[expensesindex].amount_actual -= transaction.amount;
+
+        if (state.expensesBudgetEntries[expensesindex].amount_actual < 0) {
+          state.expensesBudgetEntries[expensesindex].amount_actual = 0;
+        }
       }
+      
+      if (incomeindex !== -1) {
+        state.incomeBudgetEntries[incomeindex].amount_actual -= transaction.amount;
+
+        if (state.incomeBudgetEntries[incomeindex].amount_actual < 0) {
+          state.incomeBudgetEntries[incomeindex].amount_actual = 0;
+        }
+      }
+
     },
 
     selectBudgetItem(state, action) {
