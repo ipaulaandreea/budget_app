@@ -1,5 +1,4 @@
 const authenticate = require("./middleware");
-const argon2 = require("argon2");
 const cookieParser = require("cookie-parser");
 require("dotenv").config();
 const express = require("express");
@@ -24,8 +23,9 @@ const Category = require("./models/Category");
 
 app.get("/api/getcategories", authenticate, async (req, res) => {
   console.log("GET categories!!!!!!");
+  const user = req.query.user;
   try {
-    const categories = await Category.find();
+    const categories = await Category.find({user});
     res.json(categories);
   } catch (error) {
     console.error(error);
@@ -35,9 +35,10 @@ app.get("/api/getcategories", authenticate, async (req, res) => {
 
 const Transaction = require("./models/Transaction");
 app.get("/api/transactions", authenticate, async (req, res) => {
+  const user = req.query.user;
   console.log("GET transactions!!!!!!");
   try {
-    const transactions = await Transaction.find();
+    const transactions = await Transaction.find({user});
     res.json(transactions);
   } catch (error) {
     console.error(error);
@@ -47,11 +48,12 @@ app.get("/api/transactions", authenticate, async (req, res) => {
 
 const BudgetEntry = require("./models/BudgetEntry");
 app.get("/api/budget", authenticate, async (req, res) => {
+ 
   console.log("GET budget entries!!!!!!");
   try {
-    const { month, year } = req.body;
+    const { user, month, year } = req.body;
 
-    const budgetEntries = await BudgetEntry.find(month, year);
+    const budgetEntries = await BudgetEntry.find(user, month, year);
     res.json(budgetEntries);
   } catch (error) {
     console.error(error);
@@ -61,8 +63,8 @@ app.get("/api/budget", authenticate, async (req, res) => {
 
 app.post("/api/addcategory", authenticate, async (req, res) => {
   try {
-    const { category_name, type } = req.body;
-    const newCategory = new Category({ category_name, type });
+    const { category_name, type, user } = req.body;
+    const newCategory = new Category({ category_name, type, user });
     await newCategory.save();
     res.status(201).json(newCategory);
   } catch (error) {
@@ -74,6 +76,7 @@ app.post("/api/addcategory", authenticate, async (req, res) => {
 app.post("/api/addtransaction", authenticate, async (req, res) => {
   try {
     const {
+      user,
       category_name,
       type,
       amount,
@@ -83,6 +86,7 @@ app.post("/api/addtransaction", authenticate, async (req, res) => {
       amountDifference,
     } = req.body;
     const newTransaction = new Transaction({
+      user,
       category_name,
       type,
       amount,
@@ -92,6 +96,7 @@ app.post("/api/addtransaction", authenticate, async (req, res) => {
     });
     await newTransaction.save();
     await updateBudgetAmount(
+      user,
       category_name,
       amount,
       month,
@@ -107,10 +112,11 @@ app.post("/api/addtransaction", authenticate, async (req, res) => {
 });
 
 app.put("/api/update-budget-amount", authenticate, async (req, res) => {
-  const { category_name, amount, month, year, amountDifference } = req.body;
+  const { user,category_name, amount, month, year, amountDifference } = req.body;
   console.log("im in server.js");
   try {
     await updateBudgetAmount(
+      user,
       category_name,
       amount,
       month,
@@ -125,6 +131,7 @@ app.put("/api/update-budget-amount", authenticate, async (req, res) => {
 });
 
 async function updateBudgetAmount(
+  user,
   category_name,
   amount,
   month,
@@ -133,6 +140,7 @@ async function updateBudgetAmount(
 ) {
   try {
     const budgetCategory = await BudgetEntry.findOne({
+      user,
       category_name,
       month,
       year,
@@ -152,12 +160,12 @@ async function updateBudgetAmount(
     console.log("Before update - Budget Category:", budgetCategory);
 
     await BudgetEntry.findOneAndUpdate(
-      { category_name, month, year },
+      { user,category_name, month, year },
       { amount_actual: updatedAmount }
     );
     console.log(
       "After update - Budget Category:",
-      await BudgetEntry.findOne({ category_name, month, year })
+      await BudgetEntry.findOne({ user,category_name, month, year })
     );
 
     console.log("Amount_actual updated successfully");
@@ -203,6 +211,7 @@ app.post("/api/addbudgetentry", authenticate, async (req, res) => {
   try {
     const data = req.body;
     const newBudgetEntry = new BudgetEntry({
+      user: data.categoryData["user"],
       category_name: data.categoryData["category_name"],
       amount_expected: data.categoryData["amount_expected"],
       month: data.categoryData.month,
@@ -219,9 +228,10 @@ app.post("/api/addbudgetentry", authenticate, async (req, res) => {
   }
 });
 
-async function deleteBudgetAmount(category_name, month, year, amount) {
+async function deleteBudgetAmount(user,category_name, month, year, amount) {
   try {
     const budgetCategory = await BudgetEntry.findOne({
+      user,
       category_name,
       month,
       year,
@@ -237,7 +247,7 @@ async function deleteBudgetAmount(category_name, month, year, amount) {
     budgetCategory.amount_actual -= amount;
 
     await BudgetEntry.findOneAndUpdate(
-      { category_name, month, year },
+      { user,category_name, month, year },
       { amount_actual: budgetCategory.amount_actual }
     );
 
@@ -263,7 +273,7 @@ const User = require("./models/User");
 app.post("/api/signup", async (req, res) => {
   try {
     const username = req.body.userData.username;
-    const password = req.body.password;
+    const password = req.body.userData.password;
     const user = { username: username, password: password };
     const newUser = new User({
       username: username,
@@ -285,7 +295,7 @@ app.post("/api/login", async (req, res) => {
     const user = await User.findOne({ username: username, password: password });
 
     if (user === null)
-      res
+    return res
         .status(401)
         .json({ status: false, message: "username or password is not valid." });
     console.log("user", user);

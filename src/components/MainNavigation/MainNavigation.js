@@ -74,11 +74,13 @@ function MainNavigation() {
             >
               Authentication
             </NavLink>
-            {/* <NavLink
-              to="logout">
+            <NavLink
+            
+              to="logout"
+                onClick={logoutFunc}>
               Logout
-            </NavLink> */}
-          <button onClick = {logoutFunc}>Logout </button>
+            
+            </NavLink>
           </Nav>
           
         </Navbar.Collapse>

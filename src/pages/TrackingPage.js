@@ -21,8 +21,9 @@ export default TrackingPage;
 
 async function getTransactions() {
   let credentials = getCredentials();
+  let user = localStorage.getItem('user')
   try {
-    const response = await axios.get("http://localhost:5000/api/transactions",
+    const response = await axios.get(`http://localhost:5000/api/transactions?user=${user}`,
       {withCredentials: true},
       {
         headers: {

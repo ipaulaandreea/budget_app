@@ -97,6 +97,7 @@ const Row = ({ method }) => {
 export default Row;
 
 export async function action({ request, params }) {
+  let user = localStorage.getItem('user');
   const method = params.method;
   const selectedMonth = params.selectedMonth;
   const selectedYear = params.selectedYear;
@@ -114,6 +115,7 @@ export async function action({ request, params }) {
   var amount_expected = document.getElementById("amount_expected");
 
   const categoryData = {
+    user: user,
     category_name: selectedValue,
     amount_expected: parseInt(amount_expected.value),
     type: foundCategory[0]["type"],

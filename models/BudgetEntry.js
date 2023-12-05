@@ -6,7 +6,8 @@ const budgetEntrySchema = new mongoose.Schema({
   category_name: String,
   type: String,
   month: String,
-  year: String
+  year: String,
+  user: String
 });
 
 module.exports = mongoose.model("BudgetEntry", budgetEntrySchema);

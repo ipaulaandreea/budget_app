@@ -19,7 +19,6 @@ const BudgetSetterPage = () => {
   );
 };
 
-
 export default BudgetSetterPage;
 
 function getRefreshToken(){

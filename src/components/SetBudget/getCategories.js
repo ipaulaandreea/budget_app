@@ -1,11 +1,21 @@
 import axios from 'axios';
-
+import getCredentials from "../../Credentials";
 export default async function getCategories() {
   let incomeCategories = [];
   let expensesCategories = [];
 
   try {
-    let res = await axios.get("http://localhost:5000/api/getcategories");
+    let credentials = getCredentials();
+  let user =localStorage.getItem('user');
+    let res = await axios.get(`http://localhost:5000/api/getcategories?user=${user}`, 
+    {withCredentials: true},
+  {
+    headers: {
+      'Authorization': `Bearer ${credentials.getToken()}`,
+      'Cookie': `${credentials.getRefreshTokenForHeader()}`
+    }
+  }
+    );
     if (res.data) {
       res['data'].forEach((item) => { 
         if (item["type"] === "income") {

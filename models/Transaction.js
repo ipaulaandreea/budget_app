@@ -6,7 +6,8 @@ const transactionSchema = new mongoose.Schema({
   month: String,
   year: String,
   description: String,
-  type: String
+  type: String,
+  user: String
 });
 
 module.exports = mongoose.model("Transaction", transactionSchema);

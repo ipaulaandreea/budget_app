@@ -6,8 +6,9 @@ export default async function getTransactionsByDate(year, month) {
 
   
     try {
+      let user = localStorage.getItem('user');
       let credentials = getCredentials();
-      const response = await axios.get("http://localhost:5000/api/transactions",
+      const response = await axios.get(`http://localhost:5000/api/transactions?user=${user}`,
       {withCredentials: true},
       {
         headers: {

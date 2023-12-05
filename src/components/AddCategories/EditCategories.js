@@ -1,1 +1,1 @@
-//nu ar tb sa se poata modifica daca e deja folosita intr un buget.
+//shouldn't be able to delete categories that are already used in his budget

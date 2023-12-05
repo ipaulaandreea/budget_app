@@ -8,9 +8,10 @@ export const updateActualAmount = async (transactionData, amountDifference) => {
   let year = transactionData.year;
   try {
     let credentials = getCredentials();
+    let user = localStorage.getItem('user')
     let response = await axios.put(
       `http://localhost:5000/api/update-budget-amount`,
-      { category_name, amount, month, year, amountDifference },
+      { user, category_name, amount, month, year, amountDifference },
       { withCredentials: true },
       {
         headers: {

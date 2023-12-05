@@ -196,8 +196,9 @@ export async function action({ request, params }) {
 
   if (method === "POST") {
     try {
+      let user = localStorage.getItem('user')
       let credentials = getCredentials();
-      const response = await axios.post('http://localhost:5000/api/addtransaction', {category_name, type, description, amount, month, year}, 
+      const response = await axios.post('http://localhost:5000/api/addtransaction', {user, category_name, type, description, amount, month, year}, 
       {withCredentials: true},
   {
     headers: {
@@ -218,6 +219,7 @@ export async function action({ request, params }) {
 
   if (method === "PUT") {
     try {
+    let user = localStorage.getItem('user');
     let credentials = getCredentials();
     const state = store.getState();
     const selectedTransaction = state.transaction.selectedTransaction;
@@ -228,6 +230,7 @@ export async function action({ request, params }) {
       amountDifference = parseFloat(data.get("amount")) - prevAmount;
     } 
     let updatedData = {
+      user:user,
       _id: id,
       category_name: data.get("category_name"), 
       description: data.get("description"),

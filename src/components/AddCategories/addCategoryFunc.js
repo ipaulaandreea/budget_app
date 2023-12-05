@@ -8,8 +8,9 @@ export async function action({ request, params }) {
     const type = data.get("type")
     if (method === "POST") {  
       let credentials = getCredentials();
+      let user = localStorage.getItem('user');
       try {
-        const response = await axios.post('http://localhost:5000/api/addcategory', {category_name, type},
+        const response = await axios.post('http://localhost:5000/api/addcategory', {category_name, type, user},
         {withCredentials: true},
         {
     headers: {

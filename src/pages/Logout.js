@@ -1,7 +1,8 @@
 const LogoutPage = () => {
     return (
-        <>
-        </>
+        <h1>
+        You have been successfully logged out.
+        </h1>
     )
 
 }

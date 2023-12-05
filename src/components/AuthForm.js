@@ -16,13 +16,13 @@ const AuthForm =()=> {
        <h1>{isLogin ? "Log in" : "Create a new user"}</h1>
       <DForm.Group as={Row} className="mb-3">
         <DForm.Label column sm={2}>
-          Username
+          Email address
         </DForm.Label>
         <Col sm={10}>
           <DForm.Control
-            placeholder="Enter username..."
+            placeholder="Enter e-mail..."
             id="username"
-            type="text"
+            type="email"
             name="username"
             required
           />
