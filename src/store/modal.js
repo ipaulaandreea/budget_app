@@ -18,8 +18,11 @@ const modalSlice = createSlice({
         displayModal: true,
       };
     },
-    hideModal(state) {
-      state.displayModal = false;
+    hideModal(state) {      
+      return {
+        ...state,
+        displayModal: false,
+      };
     },
 
     isAdding(state) {

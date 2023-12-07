@@ -8,58 +8,52 @@ import { months, years } from "../SetBudget/DateOptions";
 import { useSelector, useDispatch } from "react-redux";
 import { modalActions } from "../../store/modal";
 import getTransactionsByDate from './getTransactionsByDate'
-const TrackingSheet = ({ transactions }) => {
+const TrackingSheet = () => {
 
   const dispatch = useDispatch();
   const showEditModal = useSelector((state) => state.modal.displayModal);
-  const [transactionsState, setTransactionsState] = useState(transactions);
+  const newTransaction = useSelector((state) => state.transaction.newTransaction)
   const [selectedYear, setSelectedYear] = useState(null);
   const [selectedMonth, setSelectedMonth] = useState(null);
   const [filteredTransactionsState, setFilteredTransactionsState] = useState([])
-
-  const displayTransactionsByDate = async () => {
-    const filteredTransactions = await getTransactionsByDate(selectedYear, selectedMonth);
-    setTransactionsState(filteredTransactions);
-    setFilteredTransactionsState(filteredTransactions);
-  };
-
-  const compareStates = () => {
-    let newTransactions = transactions.filter(transaction =>
-      !filteredTransactionsState.some(prevTransaction => prevTransaction['_id'] === transaction['_id'])
-    );
-  
-    if (newTransactions) {
-      handleAddTransaction(newTransactions);
-    }
-  };
-
-  const handleAddTransaction = (newTransaction) => {
-    if (newTransaction !== null) {
-      if (
-        newTransaction.year === selectedYear &&
-        newTransaction.month === selectedMonth
-      ) {
-        setFilteredTransactionsState((prevTransactions) => [...prevTransactions, newTransaction]);
-      }
-    }
-  };
-
-  
-
-  // useEffect(() => {
-  //   setTransactionsState(transactions);
-  //   compareStates()
-    
-
-  // }, [transactions,]);
+  const isAdded = useSelector((state) => state.transaction.isAdded)
 
   useEffect(() => {
-    compareStates()
-    if (selectedMonth !== null && selectedYear !== null) {
-      displayTransactionsByDate();
+    console.log('Effect triggered!');
+   
+    const fetchData = async () => {
+      try {
+        if (selectedYear !== null && selectedMonth !== null) {
+          let filteredTransactions = await getTransactionsByDate(selectedYear, selectedMonth);
+          setFilteredTransactionsState(filteredTransactions);
+          console.log('Updated Transactions:', filteredTransactionsState);
 
-    }
-  }, [selectedMonth, selectedYear, transactions]);
+          if (newTransaction.month&&newTransaction.year&&newTransaction.amount&&
+            newTransaction.category_name&&newTransaction.description){
+            dispatch(transactionActions.isAddedChange());
+            console.log('isAdded changed!');
+            const transactionToAdd = {
+            month: newTransaction.month,
+            year: newTransaction.year,
+            amount: newTransaction.amount,
+            category_name: newTransaction.category_name,
+            description: newTransaction.description
+          };
+      
+          setFilteredTransactionsState((prevTransactions) => [
+            ...prevTransactions,
+            transactionToAdd,
+          ]);
+          dispatch(transactionActions.resetNewTransaction());
+        }
+      }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+
+      }
+    };
+    fetchData();
+  }, [selectedMonth, selectedYear, newTransaction, isAdded]);
 
   const selectedYearHandler = (year) => {
     console.log(year.value);
@@ -72,7 +66,7 @@ const TrackingSheet = ({ transactions }) => {
 
 
   const deleteHandler = async (id) => {
-    const selectedTransaction = transactionsState.filter(
+    const selectedTransaction = filteredTransactionsState.filter(
       (transaction) => transaction["_id"] === id
     );
     let message = window.confirm("Are you sure?");
@@ -80,25 +74,28 @@ const TrackingSheet = ({ transactions }) => {
       dispatch(budgetItemActions.deleteTransaction(selectedTransaction));
       await deleteTransaction(id);
 
-      setTransactionsState(
-        transactionsState.filter((transaction) => transaction["_id"] !== id)
+      setFilteredTransactionsState(
+        filteredTransactionsState.filter((transaction) => transaction["_id"] !== id)
       );
     }
   };
 
 
-  const editHandler = (transaction) => {
-    dispatch(transactionActions.selectTransaction(transaction));
-    dispatch(modalActions.isEditting());
-    dispatch(modalActions.displayModal());
-  };
+  // const editHandler = (transaction) => {
+  //   dispatch(transactionActions.selectTransaction(transaction));
+  //   dispatch(modalActions.isEditting());
+  //   dispatch(modalActions.displayModal());
+  // };
 
-  const addHandler = async () => {
+  const addHandler = () => {
     dispatch(modalActions.isAdding());
     dispatch(transactionActions.selectMonth(selectedMonth)); 
     dispatch(transactionActions.selectYear(selectedYear)); 
-    // await displayTransactionsByDate()
+
   }
+
+  console.log('Filtered Transactions State:', filteredTransactionsState);
+    
 
 
   return (
@@ -149,7 +146,7 @@ const TrackingSheet = ({ transactions }) => {
         <h3>Expenses</h3>
         <h3>500$</h3>
       </Container>
-      {transactionsState !==null && 
+      {filteredTransactionsState !==null && 
       <Table striped bordered hover>
         <thead>
           <tr>
@@ -163,14 +160,14 @@ const TrackingSheet = ({ transactions }) => {
         <tbody>
           
           {filteredTransactionsState.map((transaction) => (
-            <tr>
+            <tr key={transaction["_id"]}>
               <td>{transaction.month}{transaction.year}</td>
               <td>{transaction.description}</td>
               <td>{transaction.category_name}</td>
               <td>{transaction.amount}</td>
-              <td>
+              {/* <td>
                 <button onClick={() => editHandler(transaction)}>Edit</button>
-              </td>
+              </td> */}
               <td>
                 <button onClick={() => deleteHandler(transaction["_id"])}>
                   Delete

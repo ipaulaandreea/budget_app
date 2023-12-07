@@ -6,7 +6,15 @@ const transactionSlice = createSlice({
       selectedTransaction: null,
       selectedMonth: null,
       selectedYear: null,
-      newTransaction: null,
+      newTransaction: {
+        description: null,
+        type: null,
+        category_name: null,
+        amount: null, 
+        month: null, 
+        year: null
+      },
+      isAdded: false
       
     },
     reducers: {
@@ -32,8 +40,30 @@ const transactionSlice = createSlice({
       },
 
       addTransaction(state, action) {
-        state.newTransaction = action.payload;
+        console.log('Payload:', action.payload);
+ 
+        state.newTransaction.description = action.payload.description
+        state.newTransaction.type = action.payload.type
+        state.newTransaction['category_name'] = action.payload['category_name']
+        state.newTransaction.amount= action.payload.amount
+        state.newTransaction.month = action.payload.month 
+        state.newTransaction.year = action.payload.year
+        
       },
+      
+      isAddedChange(state){
+        state.isAdded= true;
+      },
+
+      resetNewTransaction(state){
+        state.isAdded = false;
+        state.newTransaction.description = null;
+        state.newTransaction.type = null;
+        state.newTransaction['category_name'] = null;
+        state.newTransaction.amount= null;
+        state.newTransaction.month = null;
+        state.newTransaction.year = null;
+      }
 
     },
   });

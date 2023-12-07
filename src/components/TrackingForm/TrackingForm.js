@@ -7,15 +7,10 @@ import store from "../../store/index";
 import { useDispatch, useSelector } from 'react-redux';
 import { modalActions } from '../../store/modal'
 import axios from 'axios';
-import {budgetItemActions} from '../../store/budgetItems';
-import {fetchBudgetEntries} from '../../store/budgetItems'
 import {updateActualAmount} from './updateActualAmount'
 import {transactionActions} from '../../store/transaction'
 import getCredentials from "../../Credentials";
-import getCategories from '../../components/SetBudget/getCategories'
 import getBudgetEntries from '../../components/SetBudget/getBudgetEntries'
-
-
 
 const TrackingForm = ({ method, expense }) => {
   const dispatch = useDispatch();
@@ -31,7 +26,6 @@ const TrackingForm = ({ method, expense }) => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        // let categories = await getCategories();
         let categories = await getBudgetEntries(selectedMonth,selectedYear );
         console.log('fetched categories', categories);
         setExpenseCategoriesState(categories.budgetExpensesCategories)
@@ -74,14 +68,16 @@ const TrackingForm = ({ method, expense }) => {
         month: selectedMonth,
         year: selectedYear,
       };
-      dispatch(budgetItemActions.addTransaction(transactionData));
-      dispatch(transactionActions.addedTransaction(transactionData))
-      dispatch(modalActions.hideModal());
+
+      dispatch(transactionActions.addTransaction(transactionData));
+      console.log("in TrackingForm");
+      dispatch(modalActions.isAdding());
     } catch (error) {
       console.error("Error adding transaction:", error);
     }
+   
   };
-
+ 
 
   const renderSubcategoryOptions = selectedCategory !== "" && (
     selectedCategory === "expense"
