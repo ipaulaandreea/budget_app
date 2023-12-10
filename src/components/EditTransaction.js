@@ -3,7 +3,6 @@ import TrackingForm from "./TrackingForm/TrackingForm";
 import { useSelector } from "react-redux";
 
 const EditTransaction = () => {
-  // const data = useRouteLoaderData('tracker');
   const selectedTransaction = useSelector(
     (state) => state.transaction.selectedTransaction
   );

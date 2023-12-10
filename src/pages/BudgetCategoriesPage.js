@@ -25,7 +25,6 @@ export async function getCategories() {
   let credentials = getCredentials();
   let user = localStorage.getItem('user')
    let response = await axios.get(`http://localhost:5000/api/getcategories?user=${user}`, 
-  // let response = await axios.get('http://localhost:5000/api/getcategories', 
   {withCredentials: true},
   {
     headers: {

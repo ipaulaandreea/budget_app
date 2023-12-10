@@ -165,7 +165,7 @@ const SetBudget = () => {
                     <td>{income["amount_expected"]}</td>
                     <td>{income["amount_actual"]}</td>
                     <td>
-                      <button>Edit</button>
+                      {/* <button>Edit</button> */}
                     
                     </td>
                   </tr>

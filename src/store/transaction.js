@@ -20,13 +20,11 @@ const transactionSlice = createSlice({
     reducers: {
       
       selectTransaction(state, action) {
-        console.log('im in redux')
         state.selectedTransaction = action.payload;
        
       },
 
       deselectTransaction(state) {
-        console.log('im in redux')
         state.selectedTransaction = null;
        
       },

@@ -10,14 +10,13 @@ import BudgetSetterPage, {loader as budgetSettingLoader} from './pages/BudgetSet
 import { action as manipulateExpenseAction } from './components/TrackingForm/TrackingForm';
 import { action as addNewCategoryAction } from './components/UI/Row/Row'
 import BudgetCategoriesPage from './pages/BudgetCategoriesPage'
-// import { loader as fetchCategoriesLoader} from './pages/BudgetCategoriesPage'
 import {loader as addCategoryLoader} from './pages/BudgetCategoriesPage'
 import {action as addCategoryToDbAction} from './components/AddCategories/addCategoryFunc'
 import AuthenticationPage from './pages/Authentication';
 import {action as logoutAction } from '../src/logout';
 import {action as authAction} from './components/AuthForm'
 import LogoutPage from './pages/Logout'
-// import { checkAuthLoader } from './checkAuth'
+
 
 function App() {
 

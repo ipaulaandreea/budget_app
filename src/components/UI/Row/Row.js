@@ -64,12 +64,10 @@ const Row = ({ method }) => {
     );
 
     if (incomeCategory.length>0) {
-      // setUsedIncomeCategories(prevState => [...prevState, ...incomeCategory]);
       dispatch(budgetCategoryActions.addIncomeCategory());
     }
   
     if (expenseCategory.length>0) {
-      // setUsedExpensesCategories(prevState => [...prevState, ...expenseCategory]);
       dispatch(budgetCategoryActions.addExpenseCategory());
     }
 

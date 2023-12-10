@@ -2,8 +2,11 @@ import classes from "./MainNavigation.module.css";
 import { NavLink } from "react-router-dom";
 import logoutFunc from '../../logout'
 import { Nav, Navbar, Container } from "react-bootstrap";
+import {useState, useEffect} from 'react';
+
 
 function MainNavigation() {
+let user = localStorage.getItem('user')
   return (
     <Navbar
       collapseOnSelect
@@ -40,7 +43,7 @@ function MainNavigation() {
                 isActive ? classes.active : undefined
               }
             >
-              Budget Categories
+              Categories
             </NavLink>
             <NavLink
               to="tracker"
@@ -48,7 +51,7 @@ function MainNavigation() {
                 isActive ? classes.active : undefined
               }
             >
-              Expense Tracker
+              Tracking Page
             </NavLink>
             <NavLink
               to='set-budget'
@@ -56,16 +59,16 @@ function MainNavigation() {
                 isActive ? classes.active : undefined
               }
             >
-              Set Budget
+              Budget
             </NavLink>
-            <NavLink
+            {/* <NavLink
               to="budget-planner"
               className={({ isActive }) =>
                 isActive ? classes.active : undefined
               }
             >
-              Budget Planner
-            </NavLink>
+              Stats
+            </NavLink> */}
             <NavLink
               to="auth"
               className={({ isActive }) =>
@@ -74,13 +77,13 @@ function MainNavigation() {
             >
               Authentication
             </NavLink>
-            <NavLink
-            
+          
+            <NavLink 
               to="logout"
                 onClick={logoutFunc}>
               Logout
-            
             </NavLink>
+
           </Nav>
           
         </Navbar.Collapse>

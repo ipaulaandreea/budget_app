@@ -254,7 +254,6 @@ export async function action({ request, params }) {
   }
     );
     console.log('Data updated successfully');
-    console.log('amount!!!!!!', amountDifference);
     await updateActualAmount(updatedData, amountDifference)
   } catch (error) {
     console.error('Error updating data:', error);

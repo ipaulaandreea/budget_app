@@ -19,7 +19,6 @@ const TrackingSheet = () => {
   const isAdded = useSelector((state) => state.transaction.isAdded)
 
   useEffect(() => {
-    console.log('Effect triggered!');
    
     const fetchData = async () => {
       try {
@@ -80,12 +79,6 @@ const TrackingSheet = () => {
     }
   };
 
-
-  // const editHandler = (transaction) => {
-  //   dispatch(transactionActions.selectTransaction(transaction));
-  //   dispatch(modalActions.isEditting());
-  //   dispatch(modalActions.displayModal());
-  // };
 
   const addHandler = () => {
     dispatch(modalActions.isAdding());

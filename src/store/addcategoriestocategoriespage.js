@@ -42,11 +42,6 @@ const categorySlice = createSlice({
               state.expensesCategories = [...state.expensesCategories, newCategory];
             }
           
-      // if (newCategory.type === 'income') {
-      //   state.incomeCategories = [...state.incomeCategories, newCategory];
-      // } else {
-      //   state.expensesCategories = [...state.expensesCategories, newCategory];
-      // }
       state.isAddingCategory = false; 
     },
 

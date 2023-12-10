@@ -23,7 +23,7 @@ const store = configureStore({
   store.dispatch(fetchCategories());
   store.dispatch(fetchBudgetCategories());
   store.dispatch(fetchBudgetEntries());
-  // store.dispatch(addNewCategory())
+
 
   
   export default store;
