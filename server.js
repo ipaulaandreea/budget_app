@@ -212,10 +212,41 @@ app.delete("/api/deletetransaction/:id", authenticate, async (req, res) => {
   const amount = transaction.amount;
   const month = transaction.month;
   const year = transaction.year;
+  const user = transaction.user;
 
   try {
     await Transaction.findByIdAndDelete(transactionId);
-    await deleteBudgetAmount(category_name, month, year, amount);
+      const budgetCategory = await BudgetEntry.findOne({
+        user,
+        category_name,
+        month,
+        year,
+      });
+  
+      if (!budgetCategory) {
+        console.error("Budget category not found");
+        return;
+      }
+      budgetCategory.amount_actual = parseFloat(budgetCategory.amount_actual) - parseFloat(amount);
+  if (parseFloat(budgetCategory.amount_actual)>0){
+    await BudgetEntry.findOneAndUpdate(
+      { user,category_name, month, year },
+      { amount_actual: budgetCategory.amount_actual }
+    )
+  } else {
+    await BudgetEntry.findOneAndUpdate(
+      { user,category_name, month, year },
+      { amount_actual: 0 }
+    )
+  }
+  
+  
+      console.log("Amount_actual updated successfully");
+    // } catch (error) {
+    //   console.error(error);
+    // }
+
+    // await deleteBudgetAmount(category_name, month, year, amount);
     res.status(204).send();
   } catch (error) {
     console.error(error);
@@ -257,15 +288,19 @@ async function deleteBudgetAmount(user,category_name, month, year, amount) {
       console.error("Budget category not found");
       return;
     }
-    budgetCategory.amount_actual = parseFloat(budgetCategory.amount_actual);
-    amount = parseFloat(amount);
+    budgetCategory.amount_actual = parseFloat(budgetCategory.amount_actual) - parseFloat(amount);
+if (parseFloat(budgetCategory.amount_actual)>0){
+  await BudgetEntry.findOneAndUpdate(
+    { user,category_name, month, year },
+    { amount_actual: budgetCategory.amount_actual }
+  )
+} else {
+  await BudgetEntry.findOneAndUpdate(
+    { user,category_name, month, year },
+    { amount_actual: 0 }
+  )
+}
 
-    budgetCategory.amount_actual -= amount;
-
-    await BudgetEntry.findOneAndUpdate(
-      { user,category_name, month, year },
-      { amount_actual: budgetCategory.amount_actual }
-    );
 
     console.log("Amount_actual updated successfully");
   } catch (error) {
