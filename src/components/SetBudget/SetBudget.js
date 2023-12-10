@@ -13,7 +13,6 @@ const SetBudget = () => {
   const [incomeEntriesState, setIncomeEntriesState] = useState([]);
   const [expensesEntriesState, setExpensesEntriesState] = useState([]);
 
-  
   const incomeEntries = useSelector(
     (state) => state.budgetItem.incomeBudgetEntries
   );
@@ -29,7 +28,6 @@ const SetBudget = () => {
   const isAddingExpensesCategory = useSelector(
     (state) => state.budgetCategory.isAddingExpensesCategory
   );
-
 
 
   const compareStates = () => {
@@ -60,7 +58,6 @@ const SetBudget = () => {
   const addIncomeCategoryHandler = async () => {
     dispatch(budgetCategoryActions.addIncomeCategory());
     await dispatch(fetchBudgetEntries({ month: selectedMonth, year: selectedYear }));
-    // setIncomeEntriesState(incomeEntries);
     compareStates();
   };
   
@@ -90,17 +87,6 @@ const SetBudget = () => {
   }, [expensesEntries]);
 
 
-  // const getIncomeTotal = () => {
-  //   let incomeTotal = 0;
-  //   incomeByMonth.forEach((income) => (incomeTotal += income.actual));
-  //   return incomeTotal;
-  // };
-
-  // const getExpenseTotal = () => {
-  //   let expenseTotal = 0;
-  //   expensesByMonth.forEach((expense) => (expenseTotal += expense.actual));
-  //   return expenseTotal;
-  // };
 
   const selectedYearHandler = (year) => {
     setSelectedYear(year.value);

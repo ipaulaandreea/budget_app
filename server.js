@@ -61,6 +61,22 @@ app.get("/api/budget", authenticate, async (req, res) => {
   }
 });
 
+app.get("/api/availablecategories", authenticate, async (req, res) => {
+  console.log("GET availablecategories !!!!!!");
+  try {
+    const { user, month, year } = req.query; 
+
+    const budgetEntries = await BudgetEntry.find({ user, month, year }); 
+    res.json(budgetEntries);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Server Error");
+  }
+});
+
+
+
+
 app.post("/api/addcategory", authenticate, async (req, res) => {
   try {
     const { category_name, type, user } = req.body;

@@ -1,7 +1,7 @@
 import { Form, redirect } from "react-router-dom";
 import { Form as RForm } from "react-bootstrap";
 import { useSelector, useDispatch } from "react-redux";
-import {useEffect} from 'react'
+import {useState, useEffect} from 'react'
 import axios from "axios";
 import getCategories from "../../../components/SetBudget/getCategories";
 import { budgetCategoryActions } from "../../../store/budgetcategories";
@@ -9,8 +9,8 @@ import { fetchBudgetEntries } from "../../../store/budgetItems";
 import {fetchCategories} from '../../../store/addcategoriestocategoriespage'
 import getCredentials from "../../../Credentials";
 
-
 const Row = ({ method }) => {
+
   const dispatch = useDispatch();
   const fetchedIncomeCategories = useSelector(
     (state) => state.category.incomeCategories
@@ -20,6 +20,9 @@ const Row = ({ method }) => {
   );
   const selectedMonth = useSelector((state) => state.budgetItem.selectedMonth);
   const selectedYear = useSelector((state) => state.budgetItem.selectedYear);
+  
+  const [availableIncomeCategories, setAvailableIncomeCategories] = useState([]);
+  const [availableExpensesCategories, setAvailableExpensesCategories] = useState([]);
 
   const isAddingIncomeCategory = useSelector(
     (state) => state.budgetCategory.isAddingIncomeCategory
@@ -32,6 +35,22 @@ const Row = ({ method }) => {
     dispatch(budgetCategoryActions.cancelAdding());
   };
 
+  const usedIncomeEntries = useSelector((state)=>state.budgetItem.incomeBudgetEntries)
+  const usedExpensesEntries = useSelector((state)=>state.budgetItem.expensesBudgetEntries)
+
+  const getAvailableBudgetCategories = (usedIncomeEntries, usedExpensesEntries) => {
+    const usedIncomeCategoryNames = usedIncomeEntries.map(entry => entry['category_name']);
+    const availableIncomeCategories = fetchedIncomeCategories.filter(category =>
+      !usedIncomeCategoryNames.includes(category['category_name'])
+    );
+    const usedExpensesCategoryNames = usedExpensesEntries.map(entry => entry['category_name']);
+    const availableExpensesCategories = fetchedExpensesCategories.filter(category =>
+      !usedExpensesCategoryNames.includes(category['category_name'])
+    );
+    return {availableIncomeCategories, availableExpensesCategories};
+  }
+ 
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     let method = "POST";
@@ -43,12 +62,18 @@ const Row = ({ method }) => {
     let expenseCategory = fetchedExpensesCategories.filter(
       (category) => category["category_name"] === selectedValue
     );
-    if (incomeCategory.length > 0) {
+
+    if (incomeCategory.length>0) {
+      // setUsedIncomeCategories(prevState => [...prevState, ...incomeCategory]);
       dispatch(budgetCategoryActions.addIncomeCategory());
     }
-    if (expenseCategory.length > 0) {
+  
+    if (expenseCategory.length>0) {
+      // setUsedExpensesCategories(prevState => [...prevState, ...expenseCategory]);
       dispatch(budgetCategoryActions.addExpenseCategory());
     }
+
+    
     await action({
       request: event,
       params: { selectedMonth, selectedYear, method },
@@ -61,26 +86,48 @@ const Row = ({ method }) => {
     );
   };
 
+
   useEffect(() => {
+
     dispatch(fetchCategories());
   }, [dispatch, isAddingIncomeCategory, isAddingExpensesCategory]);
 
+  useEffect(() => {
+
+    const { availableIncomeCategories, availableExpensesCategories } = getAvailableBudgetCategories(usedIncomeEntries, usedExpensesEntries);
+    setAvailableIncomeCategories(availableIncomeCategories);
+    setAvailableExpensesCategories(availableExpensesCategories);
+    console.log('availableIncomeCategories, availableExpensesCategories', availableIncomeCategories, availableExpensesCategories)
+  }, [usedIncomeEntries, usedExpensesEntries]);
+
+
+
+
+
   return (
     <Form method={method} onSubmit={handleSubmit}>
-      <RForm.Select id="category" size="sm" placeholder="Select category">
-        {isAddingIncomeCategory &&
-          fetchedIncomeCategories.map((category) => (
-            <option key="category_name" value={category["category_name"]}>
-              {category["category_name"]}
-            </option>
-          ))}
-        {isAddingExpensesCategory &&
-          fetchedExpensesCategories.map((category) => (
-            <option key="category_name" value={category["category_name"]}>
-              {category["category_name"]}
-            </option>
-          ))}
-      </RForm.Select>
+<RForm.Select id="category" size="sm" placeholder="Select category">
+  {isAddingIncomeCategory &&
+    availableIncomeCategories.map((category) => (
+      <option
+        key={category["category_name"]}
+        value={category["category_name"]}
+        
+      >
+        {category["category_name"]}
+      </option>
+    ))}
+  {isAddingExpensesCategory &&
+    availableExpensesCategories.map((category) => (
+      <option
+        key={category["category_name"]}
+        value={category["category_name"]}
+       
+      >
+        {category["category_name"]}
+      </option>
+    ))}
+</RForm.Select>
       <input
         type="text"
         id="amount_expected"

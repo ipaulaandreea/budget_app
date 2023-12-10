@@ -11,6 +11,7 @@ import {updateActualAmount} from './updateActualAmount'
 import {transactionActions} from '../../store/transaction'
 import getCredentials from "../../Credentials";
 import getBudgetEntries from '../../components/SetBudget/getBudgetEntries'
+import getAvailableCategories from '../SetBudget/getAvailableBudgetCategories'
 
 const TrackingForm = ({ method, expense }) => {
   const dispatch = useDispatch();
@@ -26,7 +27,7 @@ const TrackingForm = ({ method, expense }) => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        let categories = await getBudgetEntries(selectedMonth,selectedYear );
+        let categories = await getAvailableCategories(selectedMonth,selectedYear);
         console.log('fetched categories', categories);
         setExpenseCategoriesState(categories.budgetExpensesCategories)
         setIncomeCategoriesState(categories.budgetIncomeCategories)

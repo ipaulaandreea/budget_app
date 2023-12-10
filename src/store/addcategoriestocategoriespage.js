@@ -35,12 +35,19 @@ const categorySlice = createSlice({
 
     addNewCategory(state, action) {
       const newCategory = action.payload;
-      if (newCategory.type === 'income') {
-        state.incomeCategories = [...state.incomeCategories, newCategory];
-      } else {
-        state.expensesCategories = [...state.expensesCategories, newCategory];
-      }
-      state.isAddingCategory = false; // Assuming you want to reset the flag after adding
+
+            if (newCategory.type === 'income') {
+              state.incomeCategories = [...state.incomeCategories, newCategory];
+            } else {
+              state.expensesCategories = [...state.expensesCategories, newCategory];
+            }
+          
+      // if (newCategory.type === 'income') {
+      //   state.incomeCategories = [...state.incomeCategories, newCategory];
+      // } else {
+      //   state.expensesCategories = [...state.expensesCategories, newCategory];
+      // }
+      state.isAddingCategory = false; 
     },
 
   },

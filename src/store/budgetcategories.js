@@ -27,13 +27,16 @@ const budgetCategorySlice = createSlice({
     },
     reducers: {
       addNewCategory(state, action) {
-        // Assuming action.payload is the new category
         const newCategory = action.payload;
-        if (newCategory.type === 'income') {
-          state.incomeCategories = [...state.incomeCategories, newCategory];
-        } else {
-          state.expensesCategories = [...state.expensesCategories, newCategory];
-        }
+         
+        
+            if (newCategory.type === 'income') {
+              state.incomeCategories = [...state.incomeCategories, newCategory];
+            } else {
+              state.expensesCategories = [...state.expensesCategories, newCategory];
+            }
+          
+          
       },
 
       addIncomeCategory(state, action) {
